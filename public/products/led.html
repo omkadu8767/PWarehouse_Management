@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management - Pick Orders</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        h1::before {
+            content: "📦 ";
+        }
+
+        h1::after {
+            content: " 🛒";
+        }
+
+        .order-table {
+            width: 90%;
+            margin: 0 auto 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        .order-table th,
+        .order-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .order-table th {
+            background-color: #4caf50;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .order-table tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        .order-table tr:hover {
+            background-color: #e8f5e9;
+            cursor: pointer;
+        }
+
+        .pick-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .pick-btn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        .pick-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.pick-btn:active {
+    transform: scale(0.95);
+}
+
+        .picked {
+            background-color: #d0f0c0 !important;
+            font-weight: bold;
+        }
+
+        .picked td {
+            text-decoration: line-through;
+        }
+
+        button {
+            font-size: 1rem;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+    </style>
+</head>
+
+<body>
+
+    <h1>Pick Orders</h1>
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th>✅ Select</th>
+                <th>📜 Order ID</th>
+                <th>🛍️ Item Names</th>
+                <th>💰 Total Price (₹)</th>
+                <th>⚡ Action</th>
+            </tr>
+        </thead>
+        <tbody id="order-items">
+            <!-- Order items will be populated here -->
+        </tbody>
+    </table>
+
+    <button id="pick-selected-btn" class="pick-btn" onclick="toggleSelectedOrders()">✔️ Pick Selected Orders</button>
+
+    <script>
+        // Global variable to track the number of picked orders
+        let pickedCount = 0;
+        const maxPickedOrders = 4;
+        // Function to populate orders based on cart items in localStorage
+        function populateOrders() {
+            // Retrieve cart items from localStorage
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+            if (orders.length === 0) {
+                document.getElementById('order-items').innerHTML = '<tr><td colspan="5" style="text-align:center;">No orders available.</td></tr>';
+                return;
+            }
+
+            const orderItems = document.getElementById('order-items');
+            orderItems.innerHTML = '';
+
+            // Generate order details dynamically from cart items
+            orders.forEach((order, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML =  `
+            <td><input type="checkbox" id="order-${index}" class="order-checkbox"></td>
+            <td>${order.orderId}</td>
+            <td>
+                <ul>
+                    ${order.items.map(item => `<li>${item.title} (${item.quantity} x ₹${item.price})</li>`).join('')}
+                </ul>
+            </td>
+            <td>₹${order.total}</td>
+            <td>
+                <button onclick="pickOrder(${index})">✔️ Pick</button>
+            </td>
+        `;
+                orderItems.appendChild(row);
+            });
+        }
+
+        function updatePickedCount() {
+    const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+    pickedCount = checkboxes.length;
+    checkMaxPickedOrders();
+}
+
+
+       // Toggle individual order pick
+       function pickOrder(index) {
+    const row = document.getElementById('order-items').rows[index];
+    const checkbox = row.querySelector('.order-checkbox');
+
+    // Check if we have already selected the maximum allowed orders
+    if (!checkbox.checked && pickedCount >= maxPickedOrders) {
+        alert(`You can only pick a maximum of ${maxPickedOrders} orders.`);
+        return;
+    }
+
+    checkbox.checked = !checkbox.checked;
+    updatePickedCount(checkbox);
+
+    // Update button text and row style
+    const pickButton = row.querySelector('button');
+    if (checkbox.checked) {
+        pickButton.innerText = '✅ Picked';
+        row.classList.add('picked');
+    } else {
+        pickButton.innerText = '✔️ Pick';
+        row.classList.remove('picked');
+    }
+    checkMaxPickedOrders();
+}
+
+        function toggleSelectedOrders() {
+    const checkboxes = document.querySelectorAll('.order-checkbox');
+    const pickedOrders = [];
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+    checkboxes.forEach((checkbox, index) => {
+        const row = document.getElementById('order-items').rows[index];
+        if (checkbox.checked) {
+            // const order = {
+            //     orderId: row.cells[1].innerText,
+            //     items: row.cells[2].innerText,
+            //     total: row.cells[3].innerText,
+            // };
+            pickedOrders.push(orders[index]);
+            row.classList.add('picked');
+            const pickButton = row.querySelector('button');
+            pickButton.innerText = '✅ Picked';
+        }
+    });
+
+    if (pickedOrders.length > 0) {
+        localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders));
+        // Remove the picked orders from the available orders
+        const remainingOrders = orders.filter((_, index) => !checkboxes[index].checked);
+        localStorage.setItem('orders', JSON.stringify(remainingOrders));  // Update the remaining orders in localStorage
+        window.location.href = 'success2.html';  // Redirect after picking orders
+    } else {
+        alert('Please select at least one order to pick.');
+    }
+}
+
+
+
+// Ensure the "Pick Selected Orders" button is disabled if 4 orders are already picked
+function checkMaxPickedOrders() {
+    const pickBtn = document.getElementById('pick-selected-btn');
+    if (pickedCount > maxPickedOrders) {
+        pickBtn.disabled = true; // Enable the final pick button
+    } else {
+        pickBtn.disabled = false; // Disable the final pick button if less than 4 are selected
+    }
+}
+
+        // Populate orders on page load
+window.onload = function () {
+    populateOrders();
+    checkMaxPickedOrders(); // Check if we need to disable the final button
+};
+function pickOrder(index) {
+    const row = document.getElementById('order-items').rows[index];
+    const orderId = row.cells[1].innerText;
+
+    // Send request to ESP32
+    fetch(`http://<192.168.110.171>/pick-order?orderId=${orderId}`, {
+        method: 'GET', // Use 'POST' if you prefer
+    })
+    .then(response => {
+        if (response.ok) {
+            alert(`Order ${orderId} picked successfully!`);
+            row.classList.add('picked');
+            row.querySelector('button').innerText = '✅ Picked';
+        } else {
+            alert(`Failed to pick order ${orderId}.`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Could not connect to the ESP32.');
+    });
+}
+
+    </script>
+</body>
+
+</html>

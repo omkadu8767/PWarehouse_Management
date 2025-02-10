@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Rack</title>
+    <link rel="stylesheet" href="addrack.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEVhgc0zbiNruYRh-64g3RJCiH7kr7IgbU-Q&s.jpeg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Menu bar styling */
+        nav {
+            background-color: black;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        nav ul li {
+            float: left;
+        }
+
+        nav ul li a {
+            display: block;
+            color: greenyellow;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        nav ul li a:hover {
+            background-color: green;
+        }
+
+        body {
+            margin: 0;
+            padding-top: 50px;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        form {
+            text-align: center;
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+
+        #message {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+            background-color: #f4f4f4;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+            background-color: #f4f4f4;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+    <script>
+        function viewRacks() {
+            fetch("/viewRacks")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        document.getElementById("message").innerHTML = "<p>No racks available.</p>";
+                    } else {
+                        let tableHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rack Name</th>
+                                <th>Number of Shelves</th>
+                                <th>Number of Bins</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                        data.forEach(rack => {
+                            tableHTML += `
+                        <tr>
+                            <td>${rack.rack_name}</td>
+                            <td>${rack.num_shelves}</td>
+                            <td>${rack.num_bins}</td>
+                        </tr>
+                    `;
+                        });
+                        tableHTML += "</tbody></table>";
+                        document.getElementById("message").innerHTML = tableHTML;
+                    }
+                })
+                .catch(err => console.error("Error fetching racks:", err));
+        }
+
+    </script>
+</head>
+
+<body>
+    <h2>View Rack</h2>
+    <form action="viewracks" method="GET" onsubmit="viewRacks(); return false;">
+        <button type="submit">View All Racks</button>
+    </form>
+
+    <!-- Output table will appear here below the form -->
+    <div id="message"></div>
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="addrack.html">Add Rack</a></li>
+            <li><a href="viewrack.html">View Rack</a></li>
+            <li><a href="addcategory.html">Add Category</a></li>
+            <li><a href="subcategory.html">Add Subcategory</a></li>
+            <li><a href="item.html">Define Item</a></li>
+            <li><a href="additem.html">Add Item to Warehouse</a></li>
+            <li><a href="pickitem.html">Pick Item</a></li>
+            <li><a href="viewItem.html">View Item</a></li>
+            <li><a href="additembarcode.html">Add Item by Barcode</a></li>
+            <li><a href="pickitembarcode.html">Pick Item by Barcode</a></li>
+            <li><a href="viewItemBarcode.html">View Item Barcode</a></li>
+            <li><a href="./Products/order.html">Products</a></li>
+        </ul>
+    </nav>
+</body>
+
+</html>

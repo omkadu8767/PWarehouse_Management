@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Successfully Picked Orders</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+
+        h1 {
+            color: #4caf50;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .order-list {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        .order-list th,
+        .order-list td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .order-list th {
+            background-color: #4caf50;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .order-list tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        .home-btn {
+            display: block;
+            margin: 30px auto;
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .home-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎉 Success!</h1>
+    <p class="success-message">You have successfully picked the following orders:</p>
+    <table class="order-list">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Item Names</th>
+                <th>Total Price (₹)</th>
+            </tr>
+        </thead>
+        <tbody id="picked-orders">
+            <!-- Picked orders will be populated here -->
+        </tbody>
+    </table>
+    <button class="home-btn" onclick="goHome()">🏠 Return to Home</button>
+
+    <script>
+        function populatePickedOrders() {
+            const pickedOrders = JSON.parse(localStorage.getItem('pickedOrders') || '[]');
+            const pickedOrdersTable = document.getElementById('picked-orders');
+
+            // Clear any existing rows in the table
+            pickedOrdersTable.innerHTML = '';
+
+            pickedOrders.forEach(order => {
+                const row = document.createElement('tr');
+
+                // Convert items array into a string
+                const itemNames = order.items.map(item => {
+                    return `${item.title} (${item.quantity} x ₹${item.price})`;
+                }).join(', ');
+
+                row.innerHTML = `
+                <td>${order.orderId}</td>
+                <td>${itemNames}</td>
+                <td>${order.total}</td>
+            `;
+                pickedOrdersTable.appendChild(row);
+            });
+        }
+
+        function goHome() {
+            window.location.href = 'order.html'; // Assuming the main file is `index.html`
+        }
+
+        // Populate the picked orders on page load
+        window.onload = populatePickedOrders;
+    </script>
+
+</body>
+
+</html>

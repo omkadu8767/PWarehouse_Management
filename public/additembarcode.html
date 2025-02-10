@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item by Barcode</title>
+    <style>
+        /* General styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEVhgc0zbiNruYRh-64g3RJCiH7kr7IgbU-Q&s.jpeg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        nav {
+            background-color: black;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        nav ul li {
+            float: left;
+        }
+
+        nav ul li a {
+            display: block;
+            color: greenyellow;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        nav ul li a:hover {
+            background-color: green;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 100px;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            color: green;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #f4f4f4;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+            background-color: #f4f4f4;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="./addrack.html">Add Rack</a></li>
+            <li><a href="./viewrack.html">View Rack</a></li>
+            <li><a href="./addcategory.html">Add Category</a></li>
+            <li><a href="./subcategory.html">Add Subcategory</a></li>
+            <li><a href="./item.html">Define Item</a></li>
+            <li><a href="./viewItem.html">View Item</a></li>
+            <li><a href="./viewItemBarcode.html">View Item Barcode</a></li>
+            <li><a href="./additem.html">Add Item to WareHouse</a></li>
+            <li><a href="./additembarcode.html">Add Item by Barcode</a></li>
+            <li><a href="./pickitem.html">Pick Item</a></li>
+            <li><a href="./pickitembarcode.html">Pick Item by Barcode</a></li>
+            <li><a href="./Products/order.html">Products</a></li>
+
+        </ul>
+    </nav>
+
+    <h2>Add Item to Warehouse by Barcode Scanning</h2>
+    <form id="addItemForm" onsubmit="handleSubmit(event)">
+
+        <label>Item Name</label>
+        <input type="text" name="item_name" required>
+
+        <label>Barcode Number:</label>
+        <input type="text" name="barcode" required>
+
+        <label>Add-Up Quantity:</label>
+        <input type="number" name="add_quantity" required>
+
+        <button type="submit">Add Item</button>
+    </form>
+
+    <div id="message"></div>
+
+    <!-- Table to display added items -->
+    <table id="itemTable">
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Quantity Added</th>
+                <!-- <th>Action</th> Action for removing item -->
+            </tr>
+        </thead>
+        <tbody></tbody> <!-- Dynamic rows will be added here -->
+    </table>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent actual form submission
+
+            // Get form values
+            const itemName = document.querySelector('input[name="item_name"]').value.trim();
+            const barcode = document.querySelector('input[name="barcode"]').value.trim();
+            const addQuantity = parseInt(document.querySelector('input[name="add_quantity"]').value.trim());
+
+            // Prepare data for server submission
+            const data = {
+                item_name: itemName,
+                barcode_value: barcode,
+                item_quantity: addQuantity
+            };
+
+            // Send data to server
+            fetch('/addItemByBarcode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    alert(result.message); // Show success message
+
+                    // Check if the operation was successful before updating the table
+                    if (result.message === 'Item added to warehouse by barcode successfully') {
+                        const table = document.getElementById("itemTable").querySelector("tbody");
+                        const newRow = table.insertRow();
+                        newRow.insertCell(0).textContent = itemName; // Displaying added item name
+                        newRow.insertCell(1).textContent = addQuantity; // Displaying quantity added
+                    }
+
+                    // Clear form inputs
+                    document.getElementById('addItemForm').reset();
+                    document.getElementById('message').innerHTML = ''; // Clear previous messages
+                })
+                .catch(error => {
+                    console.error('Error adding item by barcode:', error);
+                    alert('Error adding item by barcode');
+                });
+        }
+    </script>
+
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Rack</title>
+    <link rel="stylesheet" href="addrack.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEVhgc0zbiNruYRh-64g3RJCiH7kr7IgbU-Q&s.jpeg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Common styling */
+        nav {
+            background-color: black;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        nav ul li {
+            float: left;
+        }
+
+        nav ul li a {
+            display: block;
+            color: greenyellow;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        nav ul li a:hover {
+            background-color: green;
+        }
+
+        body {
+            margin: 0;
+            padding-top: 50px;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            text-align: center;
+            color: black;
+            background-color: #f4f4f4;
+
+        }
+
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+    </style>
+    <script>
+        let rackId = 1; // Initialize Rack ID for auto-increment
+
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent form from reloading
+
+            // Get form data
+            const rackName = document.querySelector('[name="rack_name"]').value;
+            const numShelfs = document.querySelector('[name="num_shelves"]').value;
+            const numBins = document.querySelector('[name="num_bins"]').value;
+
+            // Create a rack object
+            const newRack = {
+                rackId,
+                rackName,
+                numShelves,
+                numBins
+            };
+
+            // Retrieve racks from localStorage
+            let racks = JSON.parse(localStorage.getItem('racks')) || [];
+
+            // Add new rack to the list
+            racks.push(newRack);
+
+            // Save updated list to localStorage
+            localStorage.setItem('racks', JSON.stringify(racks));
+
+            // Increment Rack ID
+            rackId++;
+
+            // Clear form for next input
+            document.getElementById('addRackForm').reset();
+
+            alert('Rack added successfully!');
+        }
+    </script>
+</head>
+
+<body>
+
+    <h2>Add Rack</h2>
+    <!-- <form id="addRackForm" onsubmit="handleSubmit(event)">
+        <label>Rack Name:</label>
+        <input type="text" name="rack_name" placeholder="Enter Rack Name" required>
+        
+        <label>Number of Shelves:</label>
+        <input type="number" name="num_shelves" placeholder="Enter Number of Shelves" required>
+        
+        <label>Number of Bins in Each Shelf:</label>
+        <input type="number" name="num_bins" placeholder="Enter Number of Bins" required>
+        
+        <button type="submit">Add Rack</button>
+    </form> -->
+
+    <form action="/addRack" method="POST">
+        <label for="rack_name">Rack Name:</label>
+        <input type="text" id="rack_name" name="rack_name" placeholder="Enter Rack Name" required>
+        <label for="num_shelves">Number of Shelves:</label>
+        <input type="number" id="num_shelves" name="num_shelves" placeholder="Enter Number of Shelves" required>
+        <label for="num_bins">Number of Bins:</label>
+        <input type="number" id="num_bins" name="num_bins" placeholder="Enter Number of Bins" required>
+        <button type="submit">Add Rack</button>
+    </form>
+
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="addrack.html">Add Rack</a></li>
+            <li><a href="viewrack.html">View Rack</a></li>
+            <li><a href="addcategory.html">Add Category</a></li>
+            <li><a href="subcategory.html">Add Subcategory</a></li>
+            <li><a href="item.html">Define Item</a></li>
+            <li><a href="additem.html">Add Item to Warehouse</a></li>
+            <li><a href="pickitem.html">Pick Item</a></li>
+            <li><a href="viewItem.html">View Item</a></li>
+            <li><a href="additembarcode.html">Add Item by Barcode</a></li>
+            <li><a href="pickitembarcode.html">Pick Item by Barcode</a></li>
+            <li><a href="viewItemBarcode.html">View Item Barcode</a></li>
+            <li><a href="./Products/order.html">Products</a></li>
+
+        </ul>
+    </nav>
+</body>
+
+</html>

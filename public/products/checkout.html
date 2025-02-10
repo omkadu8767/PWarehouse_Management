@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmed Order</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e3f2fd, #ffffff);
+            color: #333;
+            text-align: center;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        header nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .order-details {
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-item {
+            font-size: 1rem;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .order-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #4caf50;
+        }
+
+        .order-total p {
+            margin: 0;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        /* Add some emoji decorations */
+        header::after {
+            content: '📦✅';
+            display: block;
+            margin-top: 10px;
+            font-size: 1.5rem;
+        }
+
+        .order-total::before {
+            content: '💵';
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Order Confirmed</h1>
+    <nav>
+        <a href="order.html">🏠 Home</a>
+    </nav>
+</header>
+
+<main>
+    <h2>🎉 Your Order Details</h2>
+    <div id="order-details" class="order-details">
+        <!-- Order details will be dynamically loaded here by JavaScript -->
+    </div>
+</main>
+
+<footer>
+    <p>Thank you for shopping with us! 🛍️</p>
+</footer>
+
+<script>
+    window.onload = function() {
+        loadOrderDetails();
+    };
+
+    function loadOrderDetails() {
+        const order = JSON.parse(localStorage.getItem('confirmedOrder')) || [];
+        const orderDetailsDiv = document.getElementById('order-details');
+        orderDetailsDiv.innerHTML = ''; // Clear previous order details
+
+        if (order.length === 0) {
+            orderDetailsDiv.innerHTML = '<p>No order details found. 😔</p>';
+            return;
+        }
+
+        let total = 0;
+        order.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'order-item';
+            itemDiv.innerHTML = `<p>📦 ${item.title} - ₹${item.price} x ${item.quantity}</p>`;
+            orderDetailsDiv.appendChild(itemDiv);
+            total += item.price * item.quantity;
+        });
+
+        const totalDiv = document.createElement('div');
+        totalDiv.className = 'order-total';
+        totalDiv.innerHTML = `<p>Total: ₹${total.toFixed(2)}</p>`;
+        orderDetailsDiv.appendChild(totalDiv);
+
+        // Clear confirmed order from localStorage after displaying
+        localStorage.removeItem('confirmedOrder');
+    }
+</script>
+
+</body>
+</html>

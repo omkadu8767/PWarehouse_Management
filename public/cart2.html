@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: greenyellow;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav a {
+            color: greenyellow;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .cart-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .cart-item {
+            width: calc(100% / 6 - 20px);
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            box-sizing: border-box;
+            border-radius: 5px;
+        }
+
+        .cart-item p {
+            margin: 10px 0;
+        }
+
+        .quantity-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quantity-controls button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .quantity-controls button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .quantity-controls input {
+            width: 50px;
+            text-align: center;
+            border: 5px solid #ccc;
+            border-radius: 1px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #333;
+            color: greenyellow;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: green;
+        }
+        .cart-item {
+            width: calc(100% / 6 - 20px);
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            box-sizing: border-box;
+            border-radius: 5px;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        
+        .cart-item:hover {
+            border-color: green; /* Green border on hover */
+            transform: scale(1.05); /* Slightly scale the product card on hover */
+        }        
+        #cart-total {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        #checkout-link {
+            margin-top: 15px;
+            display: inline-block;
+            background-color: #333;
+            color: greenyellow;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        #checkout-link:hover {
+            background-color: #111;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Shopping Cart</h1>
+    <nav>
+        <a href="order.html">Home</a>
+        <a href="cart.html" id="cart-link">Cart (<span id="cart-count">0</span>)</a>
+    </nav>
+</header>
+
+<main>
+    <h2>Your Cart</h2>
+    <div id="cart-items" class="cart-items">
+        <!-- Cart items will be dynamically loaded here by JavaScript -->
+    </div>
+    <p id="cart-total">Total: ₹0.00</p>
+    <button id="checkout-link">Proceed to Buy</button>
+</main>
+
+<script>
+    window.onload = function () {
+        loadCartItems();
+        updateCartCount();
+
+        const itemName = localStorage.getItem('itemName');
+        if (itemName) {
+            console.log("Item added to cart:", itemName);
+        }
+    };
+
+    function loadCartItems() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartItemsDiv = document.getElementById('cart-items');
+        cartItemsDiv.innerHTML = ''; // Clear previous items
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'cart-item';
+            itemDiv.innerHTML = `
+                <p>${item.title} - ₹${item.price} x ${item.quantity}</p>
+                <div class="quantity-controls">
+                    <button onclick="updateQuantity(${index}, -1)">-</button>
+                    <input type="number" id="quantity-${index}" value="${item.quantity}" min="1" max="${item.stock}" onchange="updateTotal()">
+                    <button onclick="updateQuantity(${index}, 1)">+</button>
+                </div>
+                <button onclick="removeFromCart(${index})">Remove</button>
+            `;
+            cartItemsDiv.appendChild(itemDiv);
+            total += item.price * item.quantity;
+        });
+
+        document.getElementById('cart-total').innerText = `Total: ₹${total.toFixed(2)}`;
+    }
+
+    function updateQuantity(index, delta) {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const item = cart[index];
+        let quantityInput = document.getElementById(`quantity-${index}`);
+        let quantity = parseInt(quantityInput.value);
+
+        quantity = Math.max(1, quantity + delta);
+        quantity = Math.min(item.stock, quantity);
+
+        quantityInput.value = quantity;
+        item.quantity = quantity;
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateTotal();
+    }
+
+    function updateTotal() {
+        const quantities = document.querySelectorAll('input[id^="quantity-"]');
+        let total = 0;
+
+        quantities.forEach((input, index) => {
+            const quantity = parseInt(input.value);
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            total += cart[index].price * quantity;
+            cart[index].quantity = quantity;
+            localStorage.setItem('cart', JSON.stringify(cart));
+        });
+
+        document.getElementById('cart-total').innerText = `Total: ₹${total.toFixed(2)}`;
+    }
+
+    function removeFromCart(index) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        loadCartItems();
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        document.getElementById('cart-count').innerText = cart.length;
+    }
+
+    document.getElementById('checkout-link').addEventListener('click', function (event) {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length === 0) {
+            event.preventDefault();
+            alert('Your cart is empty. Please add products to your cart before proceeding to buy.');
+        } else {
+            const total = document.getElementById('cart-total').innerText.replace('Total: ₹', '');
+            localStorage.setItem('orderTotal', total);
+        }
+    });
+     // Proceed to buy logic
+     document.getElementById('checkout-link').addEventListener('click', function(event) {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length === 0) {
+            event.preventDefault();
+            alert('Your cart is empty. Please add products to your cart before proceeding to buy.');
+        } else {
+            const total = document.getElementById('cart-total').innerText.replace('Total: ₹', '');
+            localStorage.setItem('orderTotal', total); // Store order total in localStorage
+            localStorage.removeItem('cart'); // Clear cart after order
+            window.location.href = 'order-confirmation.html'; // Redirect to confirmation page
+        }
+    });
+</script>
+
+</body>
+</html>

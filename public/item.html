@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Define Item</title>
+    <style>
+        /* General styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEVhgc0zbiNruYRh-64g3RJCiH7kr7IgbU-Q&s.jpeg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        nav {
+            background-color: black;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        nav ul li {
+            float: left;
+        }
+
+        nav ul li a {
+            display: block;
+            color: greenyellow;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        nav ul li a:hover {
+            background-color: green;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 100px;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #f4f4f4;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+            background-color: #f4f4f4;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        /* Ensure flexibility in layout */
+        @media (max-width: 768px) {
+            form {
+                max-width: 100%;
+                padding: 15px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="addrack.html">Add Rack</a></li>
+            <li><a href="viewrack.html">View Rack</a></li>
+            <li><a href="addcategory.html">Add Category</a></li>
+            <li><a href="subcategory.html">Add Subcategory</a></li>
+            <li><a href="item.html">Define Item</a></li>
+            <li><a href="additem.html">Add Item to Warehouse</a></li>
+            <li><a href="pickitem.html">Pick Item</a></li>
+            <li><a href="viewItem.html">View Item</a></li>
+            <li><a href="additembarcode.html">Add Item by Barcode</a></li>
+            <li><a href="pickitembarcode.html">Pick Item by Barcode</a></li>
+            <li><a href="viewItemBarcode.html">View Item Barcode</a></li>
+            <li><a href="./Products/order.html">Products</a></li>tml">Add Rack</a></li>
+           
+        </ul>
+    </nav>
+
+    <h2>Define / Add Item</h2>
+    <form id="addItemForm" onsubmit="handleSubmit(event)">
+        <label>Item Name:</label>
+        <input type="text" name="item_name" required>
+
+        <label>Item Category:</label>
+        <select name="category_id" id="category_id" required></select>
+
+        <label>Item Subcategory:</label>
+        <select name="subcategory_id" id="subcategory_id" required></select>
+
+        <label>Quantity:</label>
+        <input type="number" name="quantity" required>
+
+        <label>Quantity Unit:</label>
+        <select name="quantity_unit" required>
+            <option value="gms">Grams (g)</option>
+            <option value="kg">Kilograms (kg)</option>
+            <option value="dozen">Dozen</option>
+            <option value="pieces">Pieces</option>
+            <option value="ml">Milliliters (ml)</option>
+            <option value="liters">Liters (L)</option>
+            <option value="packets">Packets</option>
+            <option value="boxes">Boxes</option>
+            <option value="cans">Cans</option>
+            <option value="bars">Bars</option>
+            <option value="rolls">Rolls</option>
+            <option value="sachets">Sachets</option>
+            <option value="bottles">Bottles</option>
+            <option value="cups">Cups</option>
+            <option value="tons">Tons (metric)</option>
+            <option value="lbs">Pounds (lbs)</option>
+            <option value="jars">Jars</option>
+            <option value="bags">Bags</option>
+            <option value="tins">Tins</option>
+        </select>
+        
+
+        <label>Barcode Value:</label>
+        <input type="text" name="barcode_value" required>
+
+        <button type="submit">Submit Item</button>
+    </form>
+
+    <div id="message"></div>
+
+    <table id="itemTable">
+        <thead>
+            <tr>
+                <th>Item ID</th>
+                <th>Item Name</th>
+                <th>Item Category</th>
+                <th>Item Subcategory</th>
+                <th>Item Quantity</th>
+                <th>Quantity Unit</th>
+                <th>Barcode Value</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        let autoIncrementId = 1; // Initialize auto-increment ID
+
+        // Fetch categories and subcategories on page load
+        window.onload = function () {
+            fetch('/categories')
+                .then(response => response.json())
+                .then(categories => {
+                    const categorySelect = document.getElementById("category_id");
+                    categories.forEach(category => {
+                        const option = document.createElement("option");
+                        option.value = category.category_id;
+                        option.textContent = category.category_name;
+                        categorySelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching categories:', error));
+
+            // Fetch subcategories based on selected category
+            document.getElementById("category_id").addEventListener("change", function () {
+                const selectedCategoryId = this.value;
+
+                fetch(`/subcategories?category_id=${selectedCategoryId}`)
+                    .then(response => response.json())
+                    .then(subcategories => {
+                        const subcategorySelect = document.getElementById("subcategory_id");
+                        subcategorySelect.innerHTML = ''; // Clear existing options
+                        subcategories.forEach(subcategory => {
+                            const option = document.createElement("option");
+                            option.value = subcategory.subcategory_id;
+                            option.textContent = subcategory.subcategory_name;
+                            subcategorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching subcategories:', error));
+            });
+        };
+
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent actual form submission
+
+            const itemName = document.querySelector('input[name="item_name"]').value.trim();
+            const categoryId = document.querySelector('select[name="category_id"]').value.trim();
+            const subcategoryId = document.querySelector('select[name="subcategory_id"]').value.trim();
+            const quantity = document.querySelector('input[name="quantity"]').value.trim();
+            const quantityUnit = document.querySelector('select[name="quantity_unit"]').value.trim();
+            const barcodeValue = document.querySelector('input[name="barcode_value"]').value.trim();
+
+            // Send data to server
+            fetch('/addItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ item_name: itemName, category_id: categoryId, subcategory_id: subcategoryId, quantity, quantity_unit: quantityUnit, barcode_value: barcodeValue })
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data); // Show success or error message
+                    if (data === 'Item added successfully') { // If the response was successful
+                        const table = document.getElementById("itemTable").querySelector("tbody");
+                        const newRow = table.insertRow();
+                        newRow.insertCell(0).textContent = autoIncrementId++; // Generate Item ID
+                        newRow.insertCell(1).textContent = itemName; // Add item name
+                        newRow.insertCell(2).textContent = categoryId; // Add category ID
+                        newRow.insertCell(3).textContent = subcategoryId; // Add subcategory ID
+                        newRow.insertCell(4).textContent = quantity; // Add quantity
+                        newRow.insertCell(5).textContent = quantityUnit; // Add unit
+                        newRow.insertCell(6).textContent = barcodeValue; // Add barcode value
+
+                        // Clear form inputs
+                        document.getElementById("addItemForm").reset(); // Reset form inputs
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error adding item');
+                });
+        }
+
+    </script>
+
+</body>
+
+</html>

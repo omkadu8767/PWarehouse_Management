@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>View Items</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEVhgc0zbiNruYRh-64g3RJCiH7kr7IgbU-Q&s.jpeg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        nav {
+            background-color: black;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        nav ul li {
+            float: left;
+        }
+
+        nav ul li a {
+            display: block;
+            color: greenyellow;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        nav ul li a:hover {
+            background-color: green;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 100px;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e2e2e2;
+        }
+
+        button {
+            margin: 20px auto;
+            display: block;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="addrack.html">Add Rack</a></li>
+            <li><a href="viewrack.html">View Rack</a></li>
+            <li><a href="addcategory.html">Add Category</a></li>
+            <li><a href="subcategory.html">Add Subcategory</a></li>
+            <li><a href="item.html">Define Item</a></li>
+            <li><a href="additem.html">Add Item to Warehouse</a></li>
+            <li><a href="pickitem.html">Pick Item</a></li>
+            <li><a href="viewItem.html">View Item</a></li>
+            <li><a href="additembarcode.html">Add Item by Barcode</a></li>
+            <li><a href="pickitembarcode.html">Pick Item by Barcode</a></li>
+            <li><a href="viewItemBarcode.html">View Item Barcode</a></li>
+            <li><a href="./Products/order.html">Products</a></li>
+        </ul>
+    </nav>
+
+    <h2>View Items</h2>
+
+    <button onclick="fetchAndDisplayItems()">View Items</button>
+
+    <table id="itemsTable"> <!-- Initially hidden -->
+        <thead>
+            <tr>
+                <th>Item ID</th>
+                <th>Item Name</th>
+                <th>Added Quantity</th>
+                <th>Picked Quantity</th>
+                <th>Available Quantity</th>
+                <th>Time Stamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dynamic rows will be added here -->
+        </tbody>
+    </table>
+
+    <script>
+        function fetchAndDisplayItems() {
+            fetch('/availableItems') // Endpoint to fetch all available items data
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('itemsTable').querySelector('tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.item_id}</td>
+                            <td>${item.item_name}</td>
+                            <td>${item.added_quantity}</td>
+                            <td>${item.picked_quantity}</td>
+                            <td>${item.available_quantity}</td>
+                            <td>${item.transaction_date}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    // Show the table after data is loaded
+                    document.getElementById('itemsTable').style.display = 'table';
+                })
+                .catch(error => console.error('Error fetching items:', error));
+        }
+    </script>
+
+</body>
+
+</html>
