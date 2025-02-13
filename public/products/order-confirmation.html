@@ -144,14 +144,14 @@
 
         <!-- Order ID Display -->
         <div class="order-id">
-            Order ID: <span id="order-id">#123456789</span>
+            Order ID: <span id="order-id"></span>
         </div>
 
         <p><strong>Order Total:</strong> ₹<span id="order-total">0.00</span></p>
         <p><strong>Items Ordered:</strong> <span id="item-names"></span> 📦</p>
 
         <!-- Button back to cart -->
-        <a href="cart.html">⬅️ Back to Cart</a>
+        <a href="order.html">⬅️ Back to Home</a>
     </main>
 
     <div class="footer">
@@ -160,66 +160,31 @@
 
     <script>
         window.onload = function () {
-            const total = localStorage.getItem('orderTotal') || '0.00';
+            // Retrieve order details from localStorage
+            const orderDetails = JSON.parse(localStorage.getItem('orderDetails'));
+
+            if (!orderDetails) {
+                console.error('No order details found in localStorage.');
+                document.getElementById('order-id').innerText = 'Error retrieving order ID';
+                document.getElementById('order-total').innerText = '0.00';
+                document.getElementById('item-names').innerText = 'No items found.';
+                return; // Exit function if no order details
+            }
+
+            const { orderId, total, items } = orderDetails;
+
+            // Populate the order ID, total, and item names in the HTML
+            document.getElementById('order-id').innerText = orderId;
             document.getElementById('order-total').innerText = total;
 
-            
-
-            // Retrieve item names from localStorage
-            // const items = JSON.parse(localStorage.getItem('itemName')) || [];
-            // document.getElementById('item-names').innerText = items.join(', ');
-
-            // Retrieve cart items from localStorage
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    if (cart.length === 0) {
-        console.log('No items in the cart. No new order will be created.');
-        return; // Prevent generating a new order when cart is empty
-    }
-    // Generate a random order ID for display
-    const orderId = 'ORD-' + Math.floor(Math.random() * 1000000 + 100000);
-    document.getElementById('order-id').innerText = orderId;
-    const itemNames = cart.map(item => `${item.title} (${item.quantity})`).join(', ');
-    document.getElementById('item-names').innerText = itemNames;
-
-    // Save the order in `orders` key in localStorage
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    orders.push({
-        orderId: orderId,
-        items: cart,
-        total: parseFloat(total).toFixed(2),
-        date: new Date().toLocaleString(),
-    });
-    localStorage.setItem('orders', JSON.stringify(orders));
-
-    // Clear the cart after loading order confirmation page
-    localStorage.removeItem('cart');
-    localStorage.removeItem('orderTotal');
-    // localStorage.removeItem('itemName');
-
-            // Send order data to the backend
-            fetch('http://localhost:5505/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    orderId: orderId,
-                    price: total,
-                    // itemName: items.join(', ') // Use the actual item names from localStorage
-                    items: cart.map(item => ({
-                title: item.title,
-                quantity: item.quantity,
-                price: item.price
-            }))
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data.message);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+            // Format item names to show in the page
+            const itemNames = items.map(item => `${item.title} (${item.quantity})`).join(', ');
+            document.getElementById('item-names').innerText = itemNames;
+            // Clear the cart after successful order placement
+            localStorage.removeItem('cart');
+            localStorage.removeItem('orderTotal');
+            localStorage.removeItem('itemName');
+            localStorage.removeItem('orderDetails'); // Clear orderDetails after use
         };
     </script>
 

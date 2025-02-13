@@ -217,7 +217,7 @@
             document.getElementById('cart-count').innerText = cart.length;
         }
 
-     document.getElementById('checkout-link').addEventListener('click', function (event) {
+        document.getElementById('checkout-link').addEventListener('click', function (event) {
             event.preventDefault();
 
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -234,13 +234,24 @@
             const randomNumber = Math.floor(Math.random() * 1000000);
             const orderId = 'ORD-' + randomNumber.toString().padStart(6, '0');
 
+            const orderDetails = {
+                orderId: orderId,
+                total: total,
+                items: cart
+            };
+            localStorage.setItem('orderDetails', JSON.stringify(orderDetails));
+
             // Make the API call
             fetch('/api/orders', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ orderId: orderId, price: total, itemName: itemNames })
+                body: JSON.stringify({
+                    orderId: orderId,
+                    price: total,
+                    itemName: itemNames // Send combined item names as a string
+                })
             })
                 .then(response => {
                     if (!response.ok) {
@@ -250,28 +261,7 @@
                 })
                 .then(data => {
                     console.log('Success:', data);
-
-                    // Store the order details in localStorage to be used in the success page
-                    const orderDetails = {
-                        orderId: orderId,
-                        items: cart,
-                        total: total
-                    };
-
-                    // Retrieve existing pickedOrders from localStorage
-                    const pickedOrders = JSON.parse(localStorage.getItem('pickedOrders') || '[]');
-
-                    // Add the new order to the array
-                    pickedOrders.push(orderDetails);
-
-                    // Store the updated array back in localStorage
-                    localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders));
-
-                    // Clear the cart after successful order placement
-                    localStorage.removeItem('cart');
-
-                    // Redirect to the success page
-                    window.location.href = 'success2.html';
+                    window.location.href = 'order-confirmation.html';
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -281,5 +271,6 @@
     </script>
 
 </body>
+
 
 </html>
