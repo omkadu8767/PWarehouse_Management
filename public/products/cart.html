@@ -187,6 +187,9 @@
             item.quantity = quantity;
 
             localStorage.setItem('cart', JSON.stringify(cart));
+             // Dispatch a custom event to notify other pages about the cart update
+            window.dispatchEvent(new Event('cartUpdated'));
+
             updateTotal();
         }
 
@@ -209,6 +212,9 @@
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             cart.splice(index, 1);
             localStorage.setItem('cart', JSON.stringify(cart));
+             // Dispatch a custom event to notify other pages about the cart update
+            window.dispatchEvent(new Event('cartUpdated'));
+
             loadCartItems();
         }
 
