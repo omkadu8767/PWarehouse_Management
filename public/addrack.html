@@ -102,43 +102,7 @@
             background-color: darkgreen;
         }
     </style>
-    <script>
-        let rackId = 1; // Initialize Rack ID for auto-increment
-
-        function handleSubmit(event) {
-            event.preventDefault(); // Prevent form from reloading
-
-            // Get form data
-            const rackName = document.querySelector('[name="rack_name"]').value;
-            const numShelfs = document.querySelector('[name="num_shelves"]').value;
-            const numBins = document.querySelector('[name="num_bins"]').value;
-
-            // Create a rack object
-            const newRack = {
-                rackId,
-                rackName,
-                numShelves,
-                numBins
-            };
-
-            // Retrieve racks from localStorage
-            let racks = JSON.parse(localStorage.getItem('racks')) || [];
-
-            // Add new rack to the list
-            racks.push(newRack);
-
-            // Save updated list to localStorage
-            localStorage.setItem('racks', JSON.stringify(racks));
-
-            // Increment Rack ID
-            rackId++;
-
-            // Clear form for next input
-            document.getElementById('addRackForm').reset();
-
-            alert('Rack added successfully!');
-        }
-    </script>
+   
 </head>
 
 <body>
@@ -185,6 +149,44 @@
 
         </ul>
     </nav>
+
+    <script>
+        let rackId = 1; // Initialize Rack ID for auto-increment
+
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent form from reloading
+
+            // Get form data
+            const rackName = document.querySelector('[name="rack_name"]').value;
+            const numShelfs = document.querySelector('[name="num_shelves"]').value;
+            const numBins = document.querySelector('[name="num_bins"]').value;
+
+            // Create a rack object
+            const newRack = {
+                rackId,
+                rackName,
+                numShelves,
+                numBins
+            };
+
+            // Retrieve racks from localStorage
+            let racks = JSON.parse(localStorage.getItem('racks')) || [];
+
+            // Add new rack to the list
+            racks.push(newRack);
+
+            // Save updated list to localStorage
+            localStorage.setItem('racks', JSON.stringify(racks));
+
+            // Increment Rack ID
+            rackId++;
+
+            // Clear form for next input
+            document.getElementById('addRackForm').reset();
+
+            alert('Rack added successfully!');
+        }
+    </script>
 </body>
 
 </html>

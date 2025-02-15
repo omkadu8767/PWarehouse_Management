@@ -233,42 +233,144 @@ app.post('/addItemToWarehouse', (req, res) => {
         return res.status(400).send('All fields are required');
     }
 
-    const sql = `
-        INSERT INTO add_item_to_warehouse (item_id, item_name, item_add_quantity)
-        VALUES (?, ?, ?)
-    `;
-
-    db.query(sql, [item_id, item_name, item_add_quantity], (err) => {
-        if (err) {
-            console.error('Error adding item to warehouse:', err);
-            return res.status(500).send('Error adding item to warehouse');
-        }
-
-        // Update item quantity in the main items table
-        const updateSql = 'UPDATE items SET quantity = quantity + ? WHERE item_id = ?';
-
-        db.query(updateSql, [item_add_quantity, item_id], (err) => {
+    // 1. Find an available bin (or reuse existing)
+    const findAvailableBin = (itemId, callback) => {
+        // Check if a bin is already assigned to this item
+        const checkExistingSql = 'SELECT bin_id FROM item_bin_assignment WHERE item_id = ?';
+        db.query(checkExistingSql, [itemId], (err, existingBins) => {
             if (err) {
-                console.error('Error updating item quantity:', err);
-                return res.status(500).send('Error updating item quantity');
+                console.error('Error checking existing bin:', err);
+                return callback(err, null);
             }
 
-            // Update available_items table
-            const availableUpdateSql = `
-                INSERT INTO available_items (item_id, item_name, added_quantity, picked_quantity)
-                VALUES (?, ?, ?, 0)
-                ON DUPLICATE KEY UPDATE added_quantity = added_quantity + VALUES(added_quantity)
-            `;
-            db.query(availableUpdateSql, [item_id, item_name, item_add_quantity], (err) => {
+            if (existingBins.length > 0) {
+                // Use existing bin
+                const existingBinId = existingBins[0].bin_id;
+                console.log(`Reusing existing bin ${existingBinId} for item ${itemId}`);
+                return callback(null, existingBinId);
+            }
+
+            // Find an unused bin
+            const findUnusedSql = 'SELECT bin_id FROM bins WHERE status = "Unused" LIMIT 1';
+            db.query(findUnusedSql, (err, unusedBins) => {
                 if (err) {
-                    console.error('Error updating available items:', err);
-                    return res.status(500).send('Error updating available items');
+                    console.error('Error finding unused bin:', err);
+                    return callback(err, null);
                 }
-                res.send('Item added to warehouse successfully');
+
+                if (unusedBins.length > 0) {
+                    const unusedBinId = unusedBins[0].bin_id;
+                    console.log(`Found unused bin ${unusedBinId} for item ${itemId}`);
+                    callback(null, unusedBinId);
+                } else {
+                    console.log('No available bins!');
+                    callback(new Error('No available bins'), null);
+                }
+            });
+        });
+    };
+    // 2. Use the bin ID in the insertion
+    findAvailableBin(item_id, (err, binId) => {
+        if (err) {
+            console.error('Error finding available bin:', err);
+            return res.status(500).send('Error finding available bin');
+        }
+
+        if (!binId) {
+            console.log('No bin found, cannot add item to warehouse.');
+            return res.status(500).send('No available bins for this item');
+        }
+
+        //3. Start the transaction
+        db.beginTransaction((transactionErr) => {
+            if (transactionErr) {
+                console.error('Transaction begin error:', transactionErr);
+                return res.status(500).send('Transaction begin error');
+            }
+
+            //4. Insert the item into the add_item_to_warehouse table
+            const sql = `
+                INSERT INTO add_item_to_warehouse (item_id, item_name, item_add_quantity, bin_id)
+                VALUES (?, ?, ?, ?)
+            `;
+
+            db.query(sql, [item_id, item_name, item_add_quantity, binId], (sqlErr, result) => {
+                if (sqlErr) {
+                    return db.rollback(() => {
+                        console.error('SQL insert error:', sqlErr);
+                        return res.status(500).send('SQL insert error');
+                    });
+                }
+
+                //5. Update the item quantity in the items table
+                const updateSql = 'UPDATE items SET quantity = quantity + ? WHERE item_id = ?';
+
+                db.query(updateSql, [item_add_quantity, item_id], (updateErr) => {
+                    if (updateErr) {
+                        return db.rollback(() => {
+                            console.error('SQL update error:', updateErr);
+                            return res.status(500).send('SQL update error');
+                        });
+                    }
+
+                    //6. Update or Insert item into the available_items table
+                    const availableUpdateSql = `
+                        INSERT INTO available_items (item_id, item_name, added_quantity, picked_quantity, bin_id)
+                        VALUES (?, ?, ?, 0, ?)
+                        ON DUPLICATE KEY UPDATE added_quantity = added_quantity + VALUES(added_quantity)
+                    `;
+
+                    db.query(availableUpdateSql, [item_id, item_name, item_add_quantity, binId], (availableErr) => {
+                        if (availableErr) {
+                            return db.rollback(() => {
+                                console.error('SQL available update error:', availableErr);
+                                return res.status(500).send('SQL available update error');
+                            });
+                        }
+                        //7. Update the bin status
+                        const updateBinSql = 'UPDATE bins SET status = "Used" WHERE bin_id = ?';
+                        db.query(updateBinSql, [binId], (binErr) => {
+                            if (binErr) {
+                                return db.rollback(() => {
+                                    console.error('SQL bin update error:', binErr);
+                                    return res.status(500).send('SQL bin update error');
+                                });
+                            }
+
+                            //8. Assign bin to item in item_bin_assignment table
+                            const assignBinSql = `
+                                INSERT INTO item_bin_assignment (item_id, bin_id)
+                                VALUES (?, ?)`;
+                            db.query(assignBinSql, [item_id, binId], (assignErr) => {
+                                if (assignErr) {
+                                    return db.rollback(() => {
+                                        console.error('SQL assign bin error:', assignErr);
+                                        return res.status(500).send('SQL assign bin error');
+                                    });
+                                }
+
+                                //9. Commit transaction
+                                db.commit((commitErr) => {
+                                    if (commitErr) {
+                                        return db.rollback(() => {
+                                            console.error('SQL commit error:', commitErr);
+                                            return res.status(500).send('SQL commit error');
+                                        });
+                                    }
+
+                                    console.log(`Item ${item_id} added to warehouse successfully with bin ${binId}`);
+                                    res.send('Item added to warehouse successfully');
+                                });
+                            });
+                        });
+                    });
+                });
             });
         });
     });
 });
+
+
 
 // Endpoint to fetch all items
 app.get('/items', (req, res) => {
@@ -334,30 +436,91 @@ app.post('/addItemByBarcode', (req, res) => {
         return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Insert new item directly into the add_item_to_warehouse_by_barcode_scanning table
-    const sqlInsertTransaction = `
-        INSERT INTO add_item_to_warehouse_by_barcode_scanning (item_name, item_quantity, barcode_value)
-        VALUES (?, ?, ?)
-    `;
+    // Helper function to find an available bin
+    const findAvailableBin = (barcodeValue, callback) => {
+        // check in item_bin_assignment_barcode table to see if there are any existing binids
+        const checkExistingSql = 'SELECT bin_id FROM item_bin_assignment_barcode WHERE item_id = ?';
+        db.query(checkExistingSql, [barcodeValue], (err, existingBins) => {
+            if (err) {
+                return callback(err, null);
+            }
 
-    db.query(sqlInsertTransaction, [item_name, item_quantity, barcode_value], (err) => {
+            if (existingBins.length > 0) {
+                // Item already has a bin assigned
+                return callback(null, existingBins[0].bin_id); // Return existing bin_id
+            } else {
+                // Find an unused bin
+                const findUnusedSql = 'SELECT bin_id FROM bins WHERE status = "Unused" LIMIT 1';
+                db.query(findUnusedSql, (err, unusedBins) => {
+                    if (err) {
+                        return callback(err, null);
+                    }
+
+                    if (unusedBins.length > 0) {
+                        callback(null, unusedBins[0].bin_id); // Return unused bin_id
+                    } else {
+                        callback(new Error('No available bins'), null); // No bins available
+                    }
+                });
+            }
+        });
+    };
+
+    findAvailableBin(barcode_value, (err, binId) => {
         if (err) {
-            console.error('Error adding item by barcode:', err);
-            return res.status(500).json({ message: 'Error adding item by barcode' });
+            console.error('Error finding available bin:', err);
+            return res.status(500).json({ message: 'Error finding available bin' });
         }
 
-        // Update available_items_barcode table
-        const availableUpdateSql = `
-            INSERT INTO available_items_barcode (item_id, item_name, added_quantity, picked_quantity)
-            VALUES (?, ?, ?, 0)
-            ON DUPLICATE KEY UPDATE added_quantity = added_quantity + VALUES(added_quantity)
+        if (!binId) {
+            return res.status(500).json({ message: 'No available bins for this item' });
+        }
+
+        const sqlInsertTransaction = `
+            INSERT INTO add_item_to_warehouse_by_barcode_scanning (item_name, item_quantity, barcode_value, bin_id)
+            VALUES (?, ?, ?, ?)
         `;
-        db.query(availableUpdateSql, [barcode_value, item_name, item_quantity], (err) => {
+
+        db.query(sqlInsertTransaction, [item_name, item_quantity, barcode_value, binId], (err) => {
             if (err) {
-                console.error('Error updating available items by barcode:', err);
-                return res.status(500).send('Error updating available items by barcode');
+                console.error('Error adding item by barcode:', err);
+                return res.status(500).json({ message: 'Error adding item by barcode' });
             }
-            res.json({ message: 'Item added to warehouse by barcode successfully' });
+
+            // Update available_items_barcode table
+            const availableUpdateSql = `
+                INSERT INTO available_items_barcode (item_id, item_name, added_quantity, picked_quantity, bin_id)
+                VALUES (?, ?, ?, 0, ?)
+                ON DUPLICATE KEY UPDATE added_quantity = added_quantity + VALUES(added_quantity)
+            `;
+
+            db.query(availableUpdateSql, [barcode_value, item_name, item_quantity, binId], (err) => {
+                if (err) {
+                    console.error('Error updating available items by barcode:', err);
+                    return res.status(500).send('Error updating available items by barcode');
+                }
+
+                // Mark bin as used
+                const updateBinSql = 'UPDATE bins SET status = "Used" WHERE bin_id = ?';
+                db.query(updateBinSql, [binId], (err) => {
+                    if (err) {
+                        console.error('Error marking bin as used:', err);
+                        return res.status(500).send('Error marking bin as used');
+                    }
+                    // Assign the bin to item in item_bin_assignment_barcode table
+                    const assignBinSql = `
+                        INSERT INTO item_bin_assignment_barcode (item_id, bin_id)
+                        VALUES (?, ?)`;
+                    db.query(assignBinSql, [barcode_value, binId], (err) => {
+                        if (err) {
+                            console.error('Error Assigning the bin to the item:', err);
+                            return res.status(500).send('Error Assigning the bin to the item');
+                        }
+                        res.json({ message: 'Item added to warehouse by barcode successfully' });
+                    });
+
+                });
+            });
         });
     });
 });
