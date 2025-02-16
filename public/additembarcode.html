@@ -78,6 +78,13 @@
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
+        }input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         button {
@@ -130,19 +137,19 @@
 <body>
     <nav class="navbar">
         <ul>
-            <li><a href="./addrack.html">Add Rack</a></li>
-            <li><a href="./viewrack.html">View Rack</a></li>
-            <li><a href="./addcategory.html">Add Category</a></li>
-            <li><a href="./subcategory.html">Add Subcategory</a></li>
-            <li><a href="./item.html">Define Item</a></li>
-            <li><a href="./viewItem.html">View Item</a></li>
-            <li><a href="./viewItemBarcode.html">View Item Barcode</a></li>
-            <li><a href="./additem.html">Add Item to WareHouse</a></li>
-            <li><a href="./additembarcode.html">Add Item by Barcode</a></li>
-            <li><a href="./pickitem.html">Pick Item</a></li>
-            <li><a href="./pickitembarcode.html">Pick Item by Barcode</a></li>
+            <li><a href="addrack.html">Add Rack</a></li>
+            <li><a href="viewrack.html">View Rack</a></li>
+            <li><a href="addcategory.html">Add Category</a></li>
+            <li><a href="subcategory.html">Add Subcategory</a></li>
+            <li><a href="item.html">Define Item</a></li>
+            <li><a href="additem.html">Add Item to Warehouse</a></li>
+            <li><a href="pickitem.html">Pick Item</a></li>
+            <li><a href="viewItem.html">View Item</a></li>
+            <li><a href="additembarcode.html">Add Item by Barcode</a></li>
+            <li><a href="pickitembarcode.html">Pick Item by Barcode</a></li>
+            <li><a href="viewItemBarcode.html">View Item Barcode</a></li>
             <li><a href="./Products/order.html">Products</a></li>
-
+    
         </ul>
     </nav>
 
@@ -158,6 +165,11 @@
         <label>Add-Up Quantity:</label>
         <input type="number" name="add_quantity" required>
 
+        <label>Select Bin:</label>
+        <select name="bin_id" id="bin_id" required>
+            <!-- Options will be dynamically added here -->
+        </select>
+
         <button type="submit">Add Item</button>
     </form>
 
@@ -169,13 +181,60 @@
             <tr>
                 <th>Item Name</th>
                 <th>Quantity Added</th>
+                <th>Bin ID</th>
                 <!-- <th>Action</th> Action for removing item -->
             </tr>
         </thead>
         <tbody></tbody> <!-- Dynamic rows will be added here -->
     </table>
 
+    <!-- Table to display bins -->
+    <h2>Available Bins</h2>
+    <table id="binsTable">
+        <thead>
+            <tr>
+                <th>Bin ID</th>
+                <th>Shelf ID</th>
+                <th>Rack ID</th>
+                <th>Bin Number</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
     <script>
+        // Function to fetch available bins from the server and populate the select element
+        function populateBins() {
+            fetch('/availableBins') // Replace with your actual endpoint
+                .then(response => response.json())
+                .then(bins => {
+                    const binSelect = document.getElementById('bin_id');
+                    binSelect.innerHTML = ''; // Clear existing options
+                    bins.forEach(bin => {
+                        const option = document.createElement('option');
+                        option.value = bin.bin_id;
+                        option.textContent = bin.bin_id;
+                        binSelect.appendChild(option);
+                    });
+
+                    // Populate binsTable
+                    const binsTableBody = document.querySelector('#binsTable tbody');
+                    binsTableBody.innerHTML = ''; // Clear previous content
+
+                    bins.forEach(bin => {
+                        const row = binsTableBody.insertRow();
+                        row.insertCell(0).textContent = bin.bin_id;
+                        row.insertCell(1).textContent = bin.shelf_id;
+                        row.insertCell(2).textContent = bin.rack_id;
+                        row.insertCell(3).textContent = bin.bin_number;
+                        row.insertCell(4).textContent = bin.status;
+                    });
+
+                })
+                .catch(error => console.error('Error fetching bins:', error));
+        }
+
         function handleSubmit(event) {
             event.preventDefault(); // Prevent actual form submission
 
@@ -183,12 +242,14 @@
             const itemName = document.querySelector('input[name="item_name"]').value.trim();
             const barcode = document.querySelector('input[name="barcode"]').value.trim();
             const addQuantity = parseInt(document.querySelector('input[name="add_quantity"]').value.trim());
+            const binId = document.querySelector('select[name="bin_id"]').value.trim();
 
             // Prepare data for server submission
             const data = {
                 item_name: itemName,
                 barcode_value: barcode,
-                item_quantity: addQuantity
+                item_quantity: addQuantity,
+                bin_id: binId
             };
 
             // Send data to server
@@ -214,23 +275,23 @@
                         const newRow = table.insertRow();
                         newRow.insertCell(0).textContent = itemName; // Displaying added item name
                         newRow.insertCell(1).textContent = addQuantity; // Displaying quantity added
+                        newRow.insertCell(2).textContent = binId; // Displaying added binId
                     }
 
                     // Clear form inputs
                     document.getElementById('addItemForm').reset();
                     document.getElementById('message').innerHTML = ''; // Clear previous messages
+                    populateBins(); // Refresh bin list
                 })
                 .catch(error => {
                     console.error('Error adding item by barcode:', error);
                     alert('Error adding item by barcode');
                 });
         }
+        window.onload = function () {
+            populateBins(); // Populate bin dropdown and table
+        };
     </script>
-
-
-
-
-
 </body>
 
 </html>

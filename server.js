@@ -224,10 +224,21 @@ app.get('/subcategories', (req, res) => {
 //         });
 //     });
 // });
+// Endpoint to fetch available bins
+app.get('/availableBins', (req, res) => {
+    const sql = 'SELECT bin_id, shelf_id, rack_id, bin_number, status FROM bins WHERE status = "Unused"'; // Or any other criteria for "available"
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching available bins:', err);
+            return res.status(500).json({ message: 'Error fetching available bins' });
+        }
+        res.json(results);
+    });
+});
 
 // Endpoint to add items to the warehouse
 app.post('/addItemToWarehouse', (req, res) => {
-    const { item_id, item_add_quantity, item_name } = req.body;
+    const { item_id, item_add_quantity, item_name, bin_id } = req.body;
 
     if (!item_id || !item_add_quantity || !item_name) {
         return res.status(400).send('All fields are required');
@@ -302,6 +313,7 @@ app.post('/addItemToWarehouse', (req, res) => {
                     });
                 }
 
+
                 //5. Update the item quantity in the items table
                 const updateSql = 'UPDATE items SET quantity = quantity + ? WHERE item_id = ?';
 
@@ -329,7 +341,7 @@ app.post('/addItemToWarehouse', (req, res) => {
                         }
                         //7. Update the bin status
                         const updateBinSql = 'UPDATE bins SET status = "Used" WHERE bin_id = ?';
-                        db.query(updateBinSql, [binId], (binErr) => {
+                        db.query(updateBinSql, [bin_id], (binErr) => {
                             if (binErr) {
                                 return db.rollback(() => {
                                     console.error('SQL bin update error:', binErr);
@@ -341,7 +353,7 @@ app.post('/addItemToWarehouse', (req, res) => {
                             const assignBinSql = `
                                 INSERT INTO item_bin_assignment (item_id, bin_id)
                                 VALUES (?, ?)`;
-                            db.query(assignBinSql, [item_id, binId], (assignErr) => {
+                            db.query(assignBinSql, [item_id, bin_id], (assignErr) => {
                                 if (assignErr) {
                                     return db.rollback(() => {
                                         console.error('SQL assign bin error:', assignErr);
@@ -369,6 +381,7 @@ app.post('/addItemToWarehouse', (req, res) => {
         });
     });
 });
+
 
 
 
@@ -430,9 +443,9 @@ app.post('/pickUpItem', (req, res) => {
 
 // Endpoint to handle barcode-based addition
 app.post('/addItemByBarcode', (req, res) => {
-    const { item_name, item_quantity, barcode_value } = req.body;
+    const { item_name, item_quantity, barcode_value, bin_id } = req.body;
 
-    if (!item_name || !item_quantity || !barcode_value) {
+    if (!item_name || !item_quantity || !barcode_value || !bin_id) {
         return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -502,7 +515,7 @@ app.post('/addItemByBarcode', (req, res) => {
 
                 // Mark bin as used
                 const updateBinSql = 'UPDATE bins SET status = "Used" WHERE bin_id = ?';
-                db.query(updateBinSql, [binId], (err) => {
+                db.query(updateBinSql, [bin_id], (err) => {
                     if (err) {
                         console.error('Error marking bin as used:', err);
                         return res.status(500).send('Error marking bin as used');
@@ -511,11 +524,14 @@ app.post('/addItemByBarcode', (req, res) => {
                     const assignBinSql = `
                         INSERT INTO item_bin_assignment_barcode (item_id, bin_id)
                         VALUES (?, ?)`;
-                    db.query(assignBinSql, [barcode_value, binId], (err) => {
+                    db.query(assignBinSql, [barcode_value, bin_id], (err) => {
                         if (err) {
                             console.error('Error Assigning the bin to the item:', err);
                             return res.status(500).send('Error Assigning the bin to the item');
                         }
+                            console.log(`Item added to warehouse by barcode successfully with bin ${binId}`);
+                            
+                        
                         res.json({ message: 'Item added to warehouse by barcode successfully' });
                     });
 
@@ -524,6 +540,7 @@ app.post('/addItemByBarcode', (req, res) => {
         });
     });
 });
+
 
 // Endpoint to handle barcode-based pickUp
 
