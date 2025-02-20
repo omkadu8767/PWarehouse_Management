@@ -20,13 +20,13 @@
             margin-bottom: 30px;
         }
 
-        h1::before {
+        /* h1::before {
             content: "📦 ";
         }
 
         h1::after {
             content: " 🛒";
-        }
+        } */
 
         .order-table {
             width: 90%;
@@ -119,12 +119,38 @@
             background-color: #aaa;
             cursor: not-allowed;
         }
+
+        header {
+            background-color: #333;
+            color: greenyellow;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav a {
+            color: greenyellow;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            color: #f1f1f1;
+        }
     </style>
 </head>
 
 <body>
 
-    <h1>Pick Orders</h1>
+    <header>
+        <h1>Pick Order</h1>
+        <nav>
+            <a href="order.html">🏠 Home</a>
+        </nav>
+    </header><br>
+
     <table class="order-table">
         <thead>
             <tr>
@@ -143,121 +169,119 @@
     <button id="pick-selected-btn" class="pick-btn" onclick="toggleSelectedOrders()">✔️ Pick Selected Orders</button>
 
     <script>
-        // Global variable to track the number of picked orders
-        let pickedCount = 0;
-        const maxPickedOrders = 4;
-
-        // Function to populate orders based on cart items
+        // Function to populate orders based on picked orders from localStorage
         function populateOrders() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const pickedOrders = JSON.parse(localStorage.getItem('pickedOrders')) || [];
             const orderItems = document.getElementById('order-items');
             orderItems.innerHTML = '';
 
-            if (cart.length === 0) {
-                orderItems.innerHTML = '<tr><td colspan="5" style="text-align:center;">No items in cart.</td></tr>';
+            if (pickedOrders.length === 0) {
+                orderItems.innerHTML = '<tr><td colspan="5" style="text-align:center;">No items available for pickup.</td></tr>';
                 return;
             }
 
-            let total = 0;
-            cart.forEach((item, index) => {
+            pickedOrders.forEach((item, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                        <td><input type="checkbox" id="order-${index}" class="order-checkbox" data-order-id="${index}"></td>
-                        <td>${index + 1}</td>
-                        <td>
-                            <ul>
-                                <li>${item.title} (${item.quantity} x ₹${item.price})</li>
-                            </ul>
-                        </td>
-                        <td>₹${(item.price * item.quantity).toFixed(2)}</td>
-                        <td>
-                            <button onclick="pickOrder(${index})">✔️ Pick</button>
-                        </td>
-                    `;
+                <td><input type="checkbox" id="order-${index}" class="order-checkbox" data-order-id="${index}"></td>
+                <td>${index + 1}</td>
+                <td>${item.title} (${item.quantity})</td>
+                <td>₹${(item.price * item.quantity).toFixed(2)}</td>
+                <td><button onclick="pickOrder(${index})">✔️ Pick</button></td>
+            `;
                 orderItems.appendChild(row);
-                total += item.price * item.quantity;
             });
         }
 
         function pickOrder(index) {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const item = cart[index];
-            const row = document.getElementById('order-items').rows[index];
-            const orderId = row.cells[1].innerText;
+            const pickedOrders = JSON.parse(localStorage.getItem('pickedOrders')) || [];
+            const item = pickedOrders[index];
+
+            // Create a new order object to store in success2.html
+            const pickedOrderDetails = {
+                orderId: index + 1,
+                items: [{ title: item.title, quantity: item.quantity, price: item.price }],
+                total: (item.price * item.quantity).toFixed(2)
+            };
 
             // Send request to ESP32 (Replace with your ESP32 IP address)
-            fetch(`http://<192.168.110.171>/pick-order?orderId=${orderId}`, {
-                method: 'GET', // Use 'POST' if you prefer
+            fetch(`http://<your-esp32-ip>/pick-order?itemName=${encodeURIComponent(item.title)}&quantity=${item.quantity}`, {
+                method: 'GET',
             })
                 .then(response => {
-                    if (response.ok) {
-                        alert(`Order ${orderId} picked successfully!`);
-                        row.classList.add('picked');
-                        row.querySelector('button').innerText = '✅ Picked';
+                    alert(`Order ${item.title} picked successfully!`);
+                    const row = document.getElementById('order-items').rows[index];
+                    row.classList.add('picked');
+                    row.querySelector('button').innerText = '✅ Picked';
+                    row.style.display = 'none'; // Hide the row after picking
+
+                    // Store the picked order details in local storage
+                    let successOrders = JSON.parse(localStorage.getItem('successOrders')) || [];
+                    successOrders.push(pickedOrderDetails);
+                    localStorage.setItem('successOrders', JSON.stringify(successOrders));
+
+                    // Remove the item from local storage after picking
+                    pickedOrders.splice(index, 1); // Remove the picked item
+                    localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders)); // Update local storage
+
+                    // Check if all orders have been picked
+                    if (pickedOrders.length === 0) {
+                        window.location.href = 'success2.html'; // Redirect to success page
                     } else {
-                        alert(`Failed to pick order ${orderId}.`);
+                        populateOrders(); // Refresh the displayed orders
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Could not connect to the ESP32.');
+                    alert('Could not connect to the ESP32. Redirecting to success page.');
+
+                    const row = document.getElementById('order-items').rows[index];
+                    row.classList.add('picked');
+                    row.querySelector('button').innerText = '✅ Picked';
+                    row.style.display = 'none'; // Hide the row after picking
+
+                    // Store the picked order details in local storage
+                    let successOrders = JSON.parse(localStorage.getItem('successOrders')) || [];
+                    successOrders.push(pickedOrderDetails);
+                    localStorage.setItem('successOrders', JSON.stringify(successOrders));
+
+                    // Remove the item from local storage after picking
+                    pickedOrders.splice(index, 1); // Remove the picked item
+                    localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders)); // Update local storage
+
+                    // Check if all orders have been picked
+                    if (pickedOrders.length === 0) {
+                        window.location.href = 'success2.html'; // Redirect to success page
+                    } else {
+                        populateOrders(); // Refresh the displayed orders
+                    }
                 });
         }
 
         function toggleSelectedOrders() {
             const checkboxes = document.querySelectorAll('.order-checkbox');
-            const pickedOrders = [];
-            const cart = JSON.parse(localStorage.getItem('cart')) || []; // Use cart instead of orders
+            let anyPicked = false; // Track if any order was picked
 
             checkboxes.forEach((checkbox, index) => {
                 if (checkbox.checked) {
-                    pickedOrders.push(cart[index]); // Use cart instead of orders
-                    const row = document.getElementById('order-items').rows[index];
-                    row.classList.add('picked');
-                    const pickButton = row.querySelector('button');
-                    pickButton.innerText = '✅ Picked';
+                    anyPicked = true; // Set flag if at least one checkbox is checked
+                    pickOrder(index); // Call pickOrder function for checked items
                 }
             });
 
-            if (pickedOrders.length > 0) {
-                localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders));
-                localStorage.removeItem('cart'); // Clear the cart
-                window.location.href = 'success2.html'; // Redirect to success2.html
-            } else {
+            if (!anyPicked) {
                 alert('Please select at least one order to pick.');
             }
         }
-        // Ensure the "Pick Selected Orders" button is disabled if 4 orders are already picked
-        function checkMaxPickedOrders() {
-            const pickBtn = document.getElementById('pick-selected-btn');
-            if (pickedCount > maxPickedOrders) {
-                pickBtn.disabled = true; // Enable the final pick button
-            } else {
-                pickBtn.disabled = false; // Disable the final pick button if less than 4 are selected
-            }
-        }
-        // Listen for changes in localStorage
-        window.addEventListener('storage', function (event) {
-            if (event.key === 'cart') {
-                populateOrders();
-            }
-        });
 
-        // Listen for the custom cartUpdated event
-        window.addEventListener('cartUpdated', function () {
-            populateOrders();
-        });
         // Populate orders on page load
         window.onload = function () {
             populateOrders();
-            checkMaxPickedOrders(); // Check if we need to disable the final button
         };
     </script>
-
 </body>
 
 
 
+
 </html>
-
-

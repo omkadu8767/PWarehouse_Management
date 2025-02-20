@@ -71,8 +71,8 @@
         }
     </style>
 </head>
-
 <body>
+
     <h1>🎉 Success!</h1>
     <p class="success-message">You have successfully picked the following orders:</p>
     <table class="order-list">
@@ -90,32 +90,33 @@
     <button class="home-btn" onclick="goHome()">🏠 Return to Home</button>
 
     <script>
+        // Function to populate picked orders on success page
         function populatePickedOrders() {
-            const pickedOrders = JSON.parse(localStorage.getItem('pickedOrders') || '[]');
+            const successOrders = JSON.parse(localStorage.getItem('successOrders') || '[]');
             const pickedOrdersTable = document.getElementById('picked-orders');
 
             // Clear any existing rows in the table
             pickedOrdersTable.innerHTML = '';
 
-            pickedOrders.forEach(order => {
+            successOrders.forEach(order => {
                 const row = document.createElement('tr');
 
                 // Convert items array into a string
-                const itemNames = order.items.map(item => {
-                    return `${item.title} (${item.quantity} x ₹${item.price})`;
-                }).join(', ');
+                const itemNames = order.items.map(item => `${item.title} (${item.quantity} x ₹${item.price})`).join(', ');
 
                 row.innerHTML = `
-                <td>${order.orderId}</td>
-                <td>${itemNames}</td>
-                <td>${order.total}</td>
-            `;
+          <td>${order.orderId}</td>
+          <td>${itemNames}</td>
+          <td>₹${order.total}</td>`;
+
                 pickedOrdersTable.appendChild(row);
             });
         }
 
         function goHome() {
-            window.location.href = 'order.html'; // Assuming the main file is `index.html`
+            // Clear the successOrders from local storage
+            localStorage.removeItem('successOrders');
+            window.location.href = 'order.html'; // Assuming the main file is `order.html`
         }
 
         // Populate the picked orders on page load
@@ -123,5 +124,4 @@
     </script>
 
 </body>
-
 </html>

@@ -126,7 +126,6 @@
 </head>
 
 <body>
-
     <header>
         <img src="logo.png" alt="Logo" class="logo">
         <h1>Order Confirmation</h1>
@@ -180,14 +179,18 @@
             // Format item names to show in the page
             const itemNames = items.map(item => `${item.title} (${item.quantity})`).join(', ');
             document.getElementById('item-names').innerText = itemNames;
+
             // Clear the cart after successful order placement
             localStorage.removeItem('cart');
             localStorage.removeItem('orderTotal');
             localStorage.removeItem('itemName');
             localStorage.removeItem('orderDetails'); // Clear orderDetails after use
+
+            // Store the ordered items for pickup in led.html
+            localStorage.setItem('pickedOrders', JSON.stringify(items));
         };
     </script>
-
 </body>
+
 
 </html>
