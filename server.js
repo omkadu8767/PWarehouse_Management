@@ -529,9 +529,9 @@ app.post('/addItemByBarcode', (req, res) => {
                             console.error('Error Assigning the bin to the item:', err);
                             return res.status(500).send('Error Assigning the bin to the item');
                         }
-                            console.log(`Item added to warehouse by barcode successfully with bin ${binId}`);
-                            
-                        
+                        console.log(`Item added to warehouse by barcode successfully with bin ${binId}`);
+
+
                         res.json({ message: 'Item added to warehouse by barcode successfully' });
                     });
 
