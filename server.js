@@ -2,6 +2,8 @@ const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const path = require('path');
+const util = require('util');
+
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -783,6 +785,31 @@ app.get('/availableItemsBarcode', (req, res) => {
         res.json(results);
     });
 });
+
+// Promisify the query method
+const queryAsync = util.promisify(db.query).bind(db);
+
+app.post('/store-order', async (req, res) => {
+    try {
+        const { orderId, price, items } = req.body;
+
+        const itemNames = items.map(item => item.itemName).join(', ');
+
+        const query = 'INSERT INTO pick_order (order_id, price, item_name) VALUES (?, ?, ?)';
+        const params = [orderId, price, itemNames];
+
+        await queryAsync(query, params);
+        console.log(`Order items picked successfully: ${itemNames}`);
+
+        res.json({ message: 'Order picked successfully' });
+    } catch (error) {
+        console.error('Error storing order:', error);
+        res.status(500).json({ message: 'Failed to picked order' });
+    }
+});
+
+
+
 // Default route for undefined routes
 app.use((req, res) => {
     res.status(404).send('Page not found');
