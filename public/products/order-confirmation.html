@@ -158,7 +158,7 @@
     </div>
 
     <script>
-        window.onload = function () {
+       window.onload = function () {
             // Retrieve order details from localStorage
             const orderDetails = JSON.parse(localStorage.getItem('orderDetails'));
 
@@ -187,7 +187,15 @@
             localStorage.removeItem('orderDetails'); // Clear orderDetails after use
 
             // Store the ordered items for pickup in led.html
-            localStorage.setItem('pickedOrders', JSON.stringify(items));
+            let pickedOrders = JSON.parse(localStorage.getItem('pickedOrders')) || [];
+            pickedOrders.push({
+                orderId: orderId,
+                items: items,
+                total: total
+            });
+            localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders));
+
+            console.log("Picked Orders Stored:", pickedOrders); // Log stored data
         };
     </script>
 </body>

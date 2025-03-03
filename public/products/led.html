@@ -172,6 +172,13 @@
         // Function to populate orders based on picked orders from localStorage
         function populateOrders() {
             const pickedOrders = JSON.parse(localStorage.getItem('pickedOrders')) || [];
+            console.log("Picked Orders Retrieved:", pickedOrders); // Log retrieved data
+
+            if (!Array.isArray(pickedOrders)) {
+                console.error("Picked Orders is not an array:", pickedOrders);
+                return;
+            }
+
             const orderItems = document.getElementById('order-items');
             orderItems.innerHTML = '';
 
@@ -180,98 +187,118 @@
                 return;
             }
 
-            pickedOrders.forEach((item, index) => {
+            pickedOrders.forEach((order, index) => {
+                if (!Array.isArray(order.items)) {
+                    console.error(`Order ${index} has invalid items:`, order.items);
+                    return;
+                }
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                <td><input type="checkbox" id="order-${index}" class="order-checkbox" data-order-id="${index}"></td>
-                <td>${index + 1}</td>
-                <td>${item.title} (${item.quantity})</td>
-                <td>₹${(item.price * item.quantity).toFixed(2)}</td>
-                <td><button onclick="pickOrder(${index})">✔️ Pick</button></td>
-            `;
+                    <td><input type="checkbox" id="order-${index}" class="order-checkbox" data-order-id="${index}"></td>
+                    <td>${order.orderId}</td>
+                    <td>${order.items.map(item => `${item.title} (${item.quantity})`).join(', ')}</td>
+                    <td>₹${order.total}</td>
+                    <td><button onclick="pickOrder(${index})">✔️ Pick</button></td>
+                `;
                 orderItems.appendChild(row);
             });
         }
 
         function pickOrder(index) {
             const pickedOrders = JSON.parse(localStorage.getItem('pickedOrders')) || [];
-            const item = pickedOrders[index];
+            const order = pickedOrders[index];
 
             // Create a new order object to store in success2.html
             const pickedOrderDetails = {
-                orderId: index + 1,
-                items: [{ title: item.title, quantity: item.quantity, price: item.price }],
-                total: (item.price * item.quantity).toFixed(2)
+                orderId: order.orderId,
+                items: order.items,
+                total: order.total
             };
 
-            // Send request to ESP32 (Replace with your ESP32 IP address)
-            fetch(`http://<your-esp32-ip>/pick-order?itemName=${encodeURIComponent(item.title)}&quantity=${item.quantity}`, {
-                method: 'GET',
-            })
-                .then(response => {
-                    alert(`Order ${item.title} picked successfully!`);
-                    const row = document.getElementById('order-items').rows[index];
-                    row.classList.add('picked');
-                    row.querySelector('button').innerText = '✅ Picked';
-                    row.style.display = 'none'; // Hide the row after picking
-
-                    // Store the picked order details in local storage
-                    let successOrders = JSON.parse(localStorage.getItem('successOrders')) || [];
-                    successOrders.push(pickedOrderDetails);
-                    localStorage.setItem('successOrders', JSON.stringify(successOrders));
-
-                    // Remove the item from local storage after picking
-                    pickedOrders.splice(index, 1); // Remove the picked item
-                    localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders)); // Update local storage
-
-                    // Check if all orders have been picked
-                    if (pickedOrders.length === 0) {
-                        window.location.href = 'success2.html'; // Redirect to success page
-                    } else {
-                        populateOrders(); // Refresh the displayed orders
-                    }
+            // Send request to ESP32 for each item in the order
+            order.items.forEach(item => {
+                fetch(`http://<your-esp32-ip>/pick-order?itemName=${encodeURIComponent(item.title)}&quantity=${item.quantity}`, {
+                    method: 'GET',
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Could not connect to the ESP32. Redirecting to success page.');
+                    .then(response => {
+                        console.log(`Order ${item.title} picked successfully!`);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Could not connect to the ESP32.');
+                    });
+            });
 
-                    const row = document.getElementById('order-items').rows[index];
-                    row.classList.add('picked');
-                    row.querySelector('button').innerText = '✅ Picked';
-                    row.style.display = 'none'; // Hide the row after picking
+            const row = document.getElementById('order-items').rows[index];
+            row.classList.add('picked');
+            row.querySelector('button').innerText = '✅ Picked';
+            row.style.display = 'none'; // Hide the row after picking
 
-                    // Store the picked order details in local storage
-                    let successOrders = JSON.parse(localStorage.getItem('successOrders')) || [];
-                    successOrders.push(pickedOrderDetails);
-                    localStorage.setItem('successOrders', JSON.stringify(successOrders));
+            // Store the picked order details in local storage
+            let successOrders = JSON.parse(localStorage.getItem('successOrders')) || [];
+            successOrders.push(pickedOrderDetails);
+            localStorage.setItem('successOrders', JSON.stringify(successOrders));
 
-                    // Remove the item from local storage after picking
-                    pickedOrders.splice(index, 1); // Remove the picked item
-                    localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders)); // Update local storage
+            // Remove the order from local storage after picking
+            pickedOrders.splice(index, 1); // Remove the picked order
+            localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders)); // Update local storage
 
-                    // Check if all orders have been picked
-                    if (pickedOrders.length === 0) {
-                        window.location.href = 'success2.html'; // Redirect to success page
-                    } else {
-                        populateOrders(); // Refresh the displayed orders
-                    }
-                });
+            // Redirect to success2.html after picking an individual order
+            window.location.href = 'success2.html';
         }
 
         function toggleSelectedOrders() {
+
             const checkboxes = document.querySelectorAll('.order-checkbox');
             let anyPicked = false; // Track if any order was picked
+            const pickedOrders = JSON.parse(localStorage.getItem('pickedOrders')) || [];
 
-            checkboxes.forEach((checkbox, index) => {
-                if (checkbox.checked) {
+            let successOrders = JSON.parse(localStorage.getItem('successOrders')) || [];
+
+            // Iterate in reverse to avoid index issues when removing items
+            for (let i = checkboxes.length - 1; i >= 0; i--) {
+                if (checkboxes[i].checked) {
                     anyPicked = true; // Set flag if at least one checkbox is checked
-                    pickOrder(index); // Call pickOrder function for checked items
+
+                    const index = parseInt(checkboxes[i].getAttribute('data-order-id'));
+                    const order = pickedOrders[index];
+
+                    // Add the picked order to success orders
+                    successOrders.push({
+                        orderId: order.orderId,
+                        items: order.items,
+                        total: order.total
+                    });
+
+                    order.items.forEach(item => {
+                        fetch(`http://<your-esp32-ip>/pick-order?itemName=${encodeURIComponent(item.title)}&quantity=${item.quantity}`, {
+                            method: 'GET',
+                        })
+                            .then(response => {
+                                console.log(`Order ${item.title} picked successfully!`);
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Could not connect to the ESP32.');
+                            });
+                    });
+
+                    // Remove the picked order from local storage
+                    pickedOrders.splice(index, 1);
                 }
-            });
+            }
 
             if (!anyPicked) {
                 alert('Please select at least one order to pick.');
+                return;
             }
+
+            // Update local storage with remaining and success orders
+            localStorage.setItem('pickedOrders', JSON.stringify(pickedOrders));
+            localStorage.setItem('successOrders', JSON.stringify(successOrders));
+
+            // Redirect to success2.html after picking selected orders
+            window.location.href = 'success2.html';
         }
 
         // Populate orders on page load
@@ -279,6 +306,9 @@
             populateOrders();
         };
     </script>
+
+
+
 </body>
 
 
