@@ -808,6 +808,41 @@ app.post('/store-order', async (req, res) => {
     }
 });
 
+// Fetch products
+app.get('/products', (req, res) => {
+    db.query('SELECT * FROM product', (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
+// Update stock
+app.post('/order', (req, res) => {
+    const { id, quantity } = req.body;
+
+    // Check stock availability
+    db.query('SELECT stock FROM product WHERE id = ?', [id], (err, results) => {
+        if (err) throw err;
+        const stock = results[0].stock;
+
+        if (stock >= quantity) {
+            // Decrement stock
+            db.query(
+                'UPDATE product SET stock = stock - ? WHERE id = ?',
+                [quantity, id],
+                (err) => {
+                    if (err) throw err;
+                    res.json({ message: 'Order placed successfully!' });
+                }
+            );
+        } else {
+            res.status(400).json({ message: 'Insufficient stock!' });
+        }
+    });
+});
+
+// Serve static files from the warehouse_images directory
+app.use('/warehouse_images', express.static(path.join(__dirname, 'warehouse_images')));
 
 
 // Default route for undefined routes

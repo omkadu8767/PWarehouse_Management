@@ -518,6 +518,26 @@
             // Additional products...
         ];
 
+        // Filters based on category and name
+            document.getElementById('category-filter').addEventListener('change', () => {
+                applyFilters();
+                updateNameFilter(); // Update the dropdown based on category
+            });
+            document.getElementById('name-filter').addEventListener('change', applyFilters);
+
+            function applyFilters() {
+                const category = document.getElementById('category-filter').value;
+                const name = document.getElementById('name-filter').value.toLowerCase();
+
+                const filteredProducts = window.products.filter(product => {
+                    const matchesCategory = !category || product.category === category;
+                    const matchesName = !name || product.title.toLowerCase().includes(name);
+                    return matchesCategory && matchesName;
+                });
+
+                loadProducts(filteredProducts);
+            }
+
         function loadProducts(productsToShow) {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
@@ -541,9 +561,26 @@
             });
         }
 
+        // Function to fetch products from the server
+            async function fetchProducts() {
+                try {
+                    const response = await fetch('/products');
+                    const products = await response.json();
+                    return products;
+                } catch (error) {
+                    console.error('Error fetching products:', error);
+                }
+            }
+
+            // Fetch products and load them into the page
+            fetchProducts().then((products) => {
+                window.products = products; // Store products globally
+                loadProducts(products);
+            });
 
 
-        function updateQuantity(productId, delta) {
+
+        function updateQuantity(productId , delta) {
             const product = products.find(p => p.id === productId);
             const quantityInput = document.getElementById(`quantity-${productId}`);
             let currentQuantity = parseInt(quantityInput.value);
@@ -555,7 +592,42 @@
             quantityInput.value = currentQuantity;
         }
 
-        function addToCart(productId) {
+       function addToCart(productId) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const product = window.products.find(p => p.id === productId);
+            const quantityInput = document.getElementById(`quantity-${productId}`);
+            const quantity = parseInt(quantityInput.value);
+
+            const existingProduct = cart.find(p => p.id === productId);
+
+            if (existingProduct) {
+                existingProduct.quantity += quantity;
+            } else {
+                cart.push({ ...product, quantity });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            showConfirmationMessage(product.title);
+
+            // Update stock on the server
+            fetch('/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: productId, quantity })
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.message === 'Insufficient stock!') {
+                        alert('Insufficient stock!');
+                    }
+                })
+                .catch((error) => console.error('Error updating stock:', error));
+
+            // Dispatch a custom event to notify other pages about the cart update
+            window.dispatchEvent(new Event('cartUpdated'));
+        }
+
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const product = products.find(p => p.id === productId);
             const quantityInput = document.getElementById(`quantity-${productId}`);
@@ -575,7 +647,7 @@
 
             // Dispatch a custom event to notify other pages about the cart update
             window.dispatchEvent(new Event('cartUpdated'));
-        }
+        
 
 
         function updateCartCount() {
