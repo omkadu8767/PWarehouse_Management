@@ -786,25 +786,49 @@ app.get('/availableItemsBarcode', (req, res) => {
     });
 });
 
-// Promisify the query method
-const queryAsync = util.promisify(db.query).bind(db);
 
 app.post('/store-order', async (req, res) => {
     try {
         const { orderId, price, items } = req.body;
 
-        const itemNames = items.map(item => item.itemName).join(', ');
+        // Extract item names from the request
+        const itemNames = items.map(item => item.itemName);
+        const queryAsync = util.promisify(db.query).bind(db);
 
-        const query = 'INSERT INTO pick_order (order_id, price, item_name) VALUES (?, ?, ?)';
-        const params = [orderId, price, itemNames];
 
-        await queryAsync(query, params);
-        console.log(`Order items picked successfully: ${itemNames}`);
+        // Fetch bin_no for each item from the product table
+        const binNos = await Promise.all(
+            itemNames.map(async (itemName) => {
+                try{
+                const query = 'SELECT bin_no FROM product WHERE title = ?';
+                const results = await queryAsync(query, [itemName]);
+                return results[0]?.bin_no || null; // Return bin_no or null if not found
+                }
+                catch (error) {
+                    console.error('Error fetching bin number:', error);
+                    return null;
+                }
+            })
+        );
+
+        // Combine item names and bin numbers into a single string
+        const itemsWithBinNos = items.map((item, index) => ({
+            itemName: item.itemName,
+            binNo: binNos[index]
+        }));
+
+        // Insert into pick_order table
+        const query = 'INSERT INTO pick_order (order_id, price, item_name, bin_no) VALUES (?, ?, ?, ?)';
+        for (const { itemName, binNo } of itemsWithBinNos) {
+            await queryAsync(query, [orderId, price, itemName, binNo]);
+        }
+
+        console.log(`Order items picked successfully: ${itemNames.join(', ')}`);
 
         res.json({ message: 'Order picked successfully' });
     } catch (error) {
         console.error('Error storing order:', error);
-        res.status(500).json({ message: 'Failed to picked order' });
+        res.status(500).json({ message: 'Failed to pick order' });
     }
 });
 
