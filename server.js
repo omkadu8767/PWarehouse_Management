@@ -790,47 +790,64 @@ app.get('/availableItemsBarcode', (req, res) => {
 app.post('/store-order', async (req, res) => {
     try {
         const { orderId, price, items } = req.body;
-
-        // Extract item names from the request
-        const itemNames = items.map(item => item.itemName);
         const queryAsync = util.promisify(db.query).bind(db);
 
+        // Check if the order already exists
+        const orderExistsQuery = 'SELECT order_id FROM pick_order WHERE order_id = ? LIMIT 1';
+        const existingOrder = await queryAsync(orderExistsQuery, [orderId]);
 
-        // Fetch bin_no for each item from the product table
-        const binNos = await Promise.all(
-            itemNames.map(async (itemName) => {
-                try{
-                const query = 'SELECT bin_no FROM product WHERE title = ?';
-                const results = await queryAsync(query, [itemName]);
-                return results[0]?.bin_no || null; // Return bin_no or null if not found
-                }
-                catch (error) {
-                    console.error('Error fetching bin number:', error);
-                    return null;
-                }
-            })
-        );
-
-        // Combine item names and bin numbers into a single string
-        const itemsWithBinNos = items.map((item, index) => ({
-            itemName: item.itemName,
-            binNo: binNos[index]
-        }));
-
-        // Insert into pick_order table
-        const query = 'INSERT INTO pick_order (order_id, price, item_name, bin_no) VALUES (?, ?, ?, ?)';
-        for (const { itemName, binNo } of itemsWithBinNos) {
-            await queryAsync(query, [orderId, price, itemName, binNo]);
+        if (existingOrder.length > 0) {
+            console.warn(`Order ID ${orderId} already exists. Skipping insertion.`);
+            return res.status(400).json({ message: `Order ID ${orderId} already exists.` });
         }
 
-        console.log(`Order items picked successfully: ${itemNames.join(', ')}`);
+        // 1. Fetch bin_no for each item
+        let binNosString = '';
+        for (const item of items) {
+            try {
+                const itemName = item.itemName;
+                const binNoQuery = 'SELECT bin_no FROM product WHERE title = ?';
+                const binNoResults = await queryAsync(binNoQuery, [itemName]);
+                const binNo = binNoResults[0]?.bin_no || null;
 
+                if (binNo) {
+                    binNosString += binNo + ','; // Append bin_no with a comma
+                } else {
+                    console.warn(`Bin number not found for item: ${itemName}`);
+                }
+
+            } catch (error) {
+                console.error('Error fetching bin number:', error);
+                // Handle error appropriately
+            }
+        }
+
+        // Remove the trailing comma if there are any bin numbers
+        if (binNosString.length > 0) {
+            binNosString = binNosString.slice(0, -1);
+        }
+
+        // 2. Insert into pick_order table with concatenated bin_no values
+        const insertOrderQuery = 'INSERT INTO pick_order (order_id, price, item_name, bin_no) VALUES (?, ?, ?, ?)';
+        // Assuming item_name can be a comma-separated string of item names
+        const itemNamesString = items.map(item => item.itemName).join(', '); // Join item names
+        try {
+            await queryAsync(insertOrderQuery, [orderId, price, itemNamesString, binNosString]);
+        }
+        catch (error) {
+            console.error('Error inserting order:', error);
+            return res.status(500).json({ message: 'Failed to pick order' });
+        }
+
+        console.log(`Order ${orderId} picked successfully`);
         res.json({ message: 'Order picked successfully' });
+
     } catch (error) {
         console.error('Error storing order:', error);
         res.status(500).json({ message: 'Failed to pick order' });
     }
 });
+
 
 // Fetch products
 app.get('/products', (req, res) => {
