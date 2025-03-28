@@ -223,7 +223,8 @@
         let autoIncrementId = 1; // Initialize auto-increment ID
 
         // Fetch categories and subcategories on page load
-        window.onload = function () {
+      window.onload = function () {
+            // Fetch categories
             fetch('/categories')
                 .then(response => response.json())
                 .then(categories => {
@@ -237,27 +238,24 @@
                 })
                 .catch(error => console.error('Error fetching categories:', error));
 
-            // Fetch subcategories based on selected category
-            document.getElementById("category_id").addEventListener("change", function () {
-                const selectedCategoryId = this.value;
-
-                fetch(`/subcategories?category_id=${selectedCategoryId}`)
-                    .then(response => response.json())
-                    .then(subcategories => {
-                        const subcategorySelect = document.getElementById("subcategory_id");
-                        subcategorySelect.innerHTML = ''; // Clear existing options
-                        subcategories.forEach(subcategory => {
-                            const option = document.createElement("option");
-                            option.value = subcategory.subcategory_id;
-                            option.textContent = subcategory.subcategory_name;
-                            subcategorySelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => console.error('Error fetching subcategories:', error));
-            });
+            // Fetch all subcategories independently
+            fetch('/subcategories/all')
+                .then(response => response.json())
+                .then(subcategories => {
+                    const subcategorySelect = document.getElementById("subcategory_id");
+                    subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+                    subcategories.forEach(subcategory => {
+                        const option = document.createElement("option");
+                        option.value = subcategory.subcategory_id;
+                        option.textContent = subcategory.subcategory_name;
+                        subcategorySelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching subcategories:', error));
         };
 
-        function handleSubmit(event) {
+
+      function handleSubmit(event) {
             event.preventDefault(); // Prevent actual form submission
 
             const itemName = document.querySelector('input[name="item_name"]').value.trim();
@@ -266,6 +264,7 @@
             const quantity = document.querySelector('input[name="quantity"]').value.trim();
             const quantityUnit = document.querySelector('select[name="quantity_unit"]').value.trim();
             const barcodeValue = document.querySelector('input[name="barcode_value"]').value.trim();
+            const subcategoryName = document.querySelector('select[name="subcategory_id"] option:checked').textContent.trim();
 
             // Send data to server
             fetch('/addItem', {
@@ -285,9 +284,10 @@
                         newRow.insertCell(1).textContent = itemName; // Add item name
                         newRow.insertCell(2).textContent = categoryId; // Add category ID
                         newRow.insertCell(3).textContent = subcategoryId; // Add subcategory ID
-                        newRow.insertCell(4).textContent = quantity; // Add quantity
-                        newRow.insertCell(5).textContent = quantityUnit; // Add unit
-                        newRow.insertCell(6).textContent = barcodeValue; // Add barcode value
+                        newRow.insertCell(4).textContent = subcategoryName; // Add subcategory name
+                        newRow.insertCell(5).textContent = quantity; // Add quantity
+                        newRow.insertCell(6).textContent = quantityUnit; // Add unit
+                        newRow.insertCell(7).textContent = barcodeValue; // Add barcode value
 
                         // Clear form inputs
                         document.getElementById("addItemForm").reset(); // Reset form inputs

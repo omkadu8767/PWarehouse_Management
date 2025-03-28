@@ -166,7 +166,8 @@ app.post('/addItem', (req, res) => {
 
     console.log('Checking subcategory:', subcategory_id);
 
-    const checkSubcategorySql = 'SELECT * FROM subcategories WHERE subcategory_id = ?';
+    // Get the subcategory name based on subcategory_id
+    const checkSubcategorySql = 'SELECT subcategory_name FROM subcategories WHERE subcategory_id = ?';
     db.query(checkSubcategorySql, [subcategory_id], (err, results) => {
         if (err) {
             console.error('Error checking subcategory:', err);
@@ -177,11 +178,12 @@ app.post('/addItem', (req, res) => {
             return res.status(400).send('Subcategory does not exist. Please add the subcategory first.');
         }
 
-        console.log('Subcategory exists:', results);
+        const subcategory_name = results[0].subcategory_name;
+        console.log('Subcategory exists:', subcategory_name);
 
-        // Remove bin_id from here since it doesn't exist in your items table
-        const sql = 'INSERT INTO items (item_name, category_id, subcategory_id, quantity, quantity_unit, barcode_value) VALUES (?, ?, ?, ?, ?, ?)';
-        db.query(sql, [item_name, category_id, subcategory_id, quantity, quantity_unit, barcode_value], (err) => {
+        // Insert into items table (without rack_id)
+        const sql = 'INSERT INTO items (item_name, category_id, subcategory_id, subcategory_name, quantity, quantity_unit, barcode_value) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        db.query(sql, [item_name, category_id, subcategory_id, subcategory_name, quantity, quantity_unit, barcode_value], (err) => {
             if (err) {
                 console.error('Error adding item:', err);
                 return res.status(500).send('Error adding item');
@@ -190,16 +192,19 @@ app.post('/addItem', (req, res) => {
         });
     });
 });
-app.get('/subcategories', (req, res) => {
-    const categoryId = req.query.category_id;
 
-    const sql = 'SELECT * FROM subcategories WHERE category_id = ?';
-    db.query(sql, [categoryId], (err, results) => {
-        if (err) return handleError(err, res, 'Error fetching subcategories');
 
-        res.json(results); // Send subcategories as JSON
+app.get('/subcategories/all', (req, res) => {
+    const sql = 'SELECT * FROM subcategories';
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching subcategories:', err);
+            return res.status(500).send('Error fetching subcategories');
+        }
+        res.json(results);
     });
 });
+
 
 
 
