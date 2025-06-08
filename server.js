@@ -900,7 +900,7 @@ app.use((req, res) => {
 });
 
 // Start the server
-const PORT = 5505;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/index.html`);
 });
