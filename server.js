@@ -22,8 +22,7 @@ const db = mysql.createPool({
     user: process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
-    PORT: process.env.PORT,
-    ssl: { rejectUnauthorized: false }
+    port: process.env.DB_PORT, ssl: { rejectUnauthorized: false }
 
 });
 
@@ -906,7 +905,7 @@ app.use((req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000; // Use 3000 locally, or Render's assigned port
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/index.html`);
 });
