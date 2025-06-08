@@ -82,11 +82,10 @@ app.post('/addRack', (req, res) => {
 
 // View Racks (Feature 2)
 app.get('/viewRacks', (req, res) => {
-    const sql = 'SELECT * FROM racks';
-    db.query(sql, (err, results) => {
+    db.query('SELECT * FROM racks', (err, results) => {
         if (err) {
-            console.error('Error fetching racks:', err); // Add this line
-            return handleError(err, res, 'Error fetching racks');
+            console.error('Error fetching racks:', err);
+            return res.status(500).json({ error: 'Error fetching racks' }); // Return JSON
         }
         res.json(results);
     });
