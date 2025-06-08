@@ -142,17 +142,17 @@
 <body>
     <nav class="navbar">
         <ul>
-            <li><a href="addrack.html">Add Rack</a></li>
-            <li><a href="viewrack.html">View Rack</a></li>
-            <li><a href="addcategory.html">Add Category</a></li>
-            <li><a href="subcategory.html">Add Subcategory</a></li>
-            <li><a href="item.html">Define Item</a></li>
-            <li><a href="additem.html">Add Item to Warehouse</a></li>
-            <li><a href="pickitem.html">Pick Item</a></li>
-            <li><a href="viewItem.html">View Item</a></li>
-            <li><a href="additembarcode.html">Add Item by Barcode</a></li>
-            <li><a href="pickitembarcode.html">Pick Item by Barcode</a></li>
-            <li><a href="viewItemBarcode.html">View Item Barcode</a></li>
+            <li><a href="./addrack.html">Add Rack</a></li>
+            <li><a href="./viewrack.html">View Rack</a></li>
+            <li><a href="./addcategory.html">Add Category</a></li>
+            <li><a href="./subcategory.html">Add Subcategory</a></li>
+            <li><a href="./item.html">Define Item</a></li>
+            <li><a href="./additem.html">Add Item to Warehouse</a></li>
+            <li><a href="./pickitem.html">Pick Item</a></li>
+            <li><a href="./viewItem.html">View Item</a></li>
+            <li><a href="./additembarcode.html">Add Item by Barcode</a></li>
+            <li><a href="./pickitembarcode.html">Pick Item by Barcode</a></li>
+            <li><a href="./viewItemBarcode.html">View Item Barcode</a></li>
             <li><a href="./Products/order.html">Products</a></li>
 
         </ul>
@@ -205,37 +205,37 @@
     </table>
     <script>
         // Function to fetch available bins from the server and populate the select element
-            function populateBins() {
-                fetch('/availableBins') // Replace with your actual endpoint
-                    .then(response => response.json())
-                    .then(bins => {
-                        const binSelect = document.getElementById('bin_id');
-                        binSelect.innerHTML = ''; // Clear existing options
-                        //Filter function so user is able to get unused bins
-                        const availableBins = bins.filter(bin => bin.status === 'Unused');
-                        availableBins.forEach(bin => {
-                            const option = document.createElement('option');
-                            option.value = bin.bin_id;
-                            option.textContent = bin.bin_id;
-                            binSelect.appendChild(option);
-                        });
+        function populateBins() {
+            fetch('/availableBins') // Replace with your actual endpoint
+                .then(response => response.json())
+                .then(bins => {
+                    const binSelect = document.getElementById('bin_id');
+                    binSelect.innerHTML = ''; // Clear existing options
+                    //Filter function so user is able to get unused bins
+                    const availableBins = bins.filter(bin => bin.status === 'Unused');
+                    availableBins.forEach(bin => {
+                        const option = document.createElement('option');
+                        option.value = bin.bin_id;
+                        option.textContent = bin.bin_id;
+                        binSelect.appendChild(option);
+                    });
 
-                        // Populate binsTable
-                        const binsTableBody = document.querySelector('#binsTable tbody');
-                        binsTableBody.innerHTML = ''; // Clear previous content
+                    // Populate binsTable
+                    const binsTableBody = document.querySelector('#binsTable tbody');
+                    binsTableBody.innerHTML = ''; // Clear previous content
 
-                        bins.forEach(bin => {
-                            const row = binsTableBody.insertRow();
-                            row.insertCell(0).textContent = bin.bin_id;
-                            row.insertCell(1).textContent = bin.shelf_id;
-                            row.insertCell(2).textContent = bin.rack_id;
-                            row.insertCell(3).textContent = bin.bin_number;
-                            row.insertCell(4).textContent = bin.status;
-                        });
+                    bins.forEach(bin => {
+                        const row = binsTableBody.insertRow();
+                        row.insertCell(0).textContent = bin.bin_id;
+                        row.insertCell(1).textContent = bin.shelf_id;
+                        row.insertCell(2).textContent = bin.rack_id;
+                        row.insertCell(3).textContent = bin.bin_number;
+                        row.insertCell(4).textContent = bin.status;
+                    });
 
-                    })
-                    .catch(error => console.error('Error fetching bins:', error));
-            }
+                })
+                .catch(error => console.error('Error fetching bins:', error));
+        }
 
 
         const itemEntries = []; // Array to store all item entries

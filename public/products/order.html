@@ -262,14 +262,14 @@
 
     <header>
         <!-- Logo -->
-        <img src="logo.png" alt="logo" />
+        <a href="./order.html"><img src="/products/warehouse_images/logo.png" alt="logo" /></a>
         <h1>Product Selection</h1>
         <nav class="navbar">
             <ul>
-                <li><a href="order.html">🛒 Order</a></li>
-                <li><a href="cart.html">🛍 Cart (<span id="cart-count">0</span>)</a></li>
+                <li><a href="./order.html">🛒 Order</a></li>
+                <li><a href="./cart.html">🛍 Cart (<span id="cart-count">0</span>)</a></li>
                 <li><a href="../index.html">🏠 Home</a></li>
-                <li><a href="led.html">💡 LED</a></li>
+                <li><a href="./led.html">💡 LED</a></li>
             </ul>
         </nav>
     </header>
@@ -278,7 +278,7 @@
         <h2>Products</h2>
         <div class="filter-search">
             <div class="login-signup">
-                <a href="login.html">👤 Login / Signup</a>
+                <a href="./login.html">👤 Login / Signup</a>
             </div>
             <label for="category-filter">Filter by Category:</label>
             <select id="category-filter">
@@ -329,78 +329,78 @@
         // JavaScript code remains unchanged
         const products = [
             // Toothpaste
-            { id: 1, title: "Colgate Toothpaste", price: 100, category: "toothpaste", stock: 30, quantity: 100, unit: "gm", image: "./warehouse_images/colgate.jpeg" },
-            { id: 2, title: "Pepsodent Toothpaste", price: 90, category: "toothpaste", stock: 40, quantity: 75, unit: "gm", image: "./warehouse_images/pepsodent.jpeg" },
-            { id: 3, title: "Sensodyne Toothpaste", price: 120, category: "toothpaste", stock: 35, quantity: 90, unit: "gm", image: "./warehouse_images/sensodyne.jpeg" },
-            { id: 4, title: "Patanjali Toothpaste", price: 80, category: "toothpaste", stock: 50, quantity: 110, unit: "gm", image: "./warehouse_images/patanjali.jpeg" },
-            { id: 5, title: "Close-Up Toothpaste", price: 70, category: "toothpaste", stock: 20, quantity: 100, unit: "gm", image: "./warehouse_images/closeup.jpeg" },
-            { id: 6, title: "Dabur Red Toothpaste", price: 110, category: "toothpaste", stock: 60, quantity: 120, unit: "gm", image: "./warehouse_images/daburred.jpeg " },
-            { id: 7, title: "Meswak Toothpaste", price: 95, category: "toothpaste", stock: 45, quantity: 85, unit: "gm", image: "./warehouse_images/meswak.jpeg" },
-            { id: 8, title: "Oral-B Toothpaste", price: 130, category: "toothpaste", stock: 25, quantity: 150, unit: "gm", image: "./warehouse_images/oralb.jpeg" },
+            { id: 1, title: "Colgate Toothpaste", price: 100, category: "toothpaste", stock: 30, quantity: 100, unit: "gm", image: "colgate.jpeg" },
+            { id: 2, title: "Pepsodent Toothpaste", price: 90, category: "toothpaste", stock: 40, quantity: 75, unit: "gm", image: "pepsodent.jpeg" },
+            { id: 3, title: "Sensodyne Toothpaste", price: 120, category: "toothpaste", stock: 35, quantity: 90, unit: "gm", image: "sensodyne.jpeg" },
+            { id: 4, title: "Patanjali Toothpaste", price: 80, category: "toothpaste", stock: 50, quantity: 110, unit: "gm", image: "patanjali.jpeg" },
+            { id: 5, title: "Close-Up Toothpaste", price: 70, category: "toothpaste", stock: 20, quantity: 100, unit: "gm", image: "closeup.jpeg" },
+            { id: 6, title: "Dabur Red Toothpaste", price: 110, category: "toothpaste", stock: 60, quantity: 120, unit: "gm", image: "daburred.jpeg " },
+            { id: 7, title: "Meswak Toothpaste", price: 95, category: "toothpaste", stock: 45, quantity: 85, unit: "gm", image: "meswak.jpeg" },
+            { id: 8, title: "Oral-B Toothpaste", price: 130, category: "toothpaste", stock: 25, quantity: 150, unit: "gm", image: "oralb.jpeg" },
 
 
             // Mint
-            { id: 9, title: "Mint Mouthwash", price: 50, category: "mint", stock: 50, quantity: 250, unit: "ml", image: "./warehouse_images/colgate.jpeg" },
-            { id: 10, title: "Freshmint Spray", price: 70, category: "mint", stock: 45, quantity: 200, unit: "ml", image: "./warehouse_images/colgate.jpeg" },
-            { id: 23, title: "Tic Tac Freshmint", price: 40, category: "mint", stock: 60, quantity: 100, unit: "gm", image: "./warehouse_images/colgate.jpeg" },
-            { id: 24, title: "Altoids Mints", price: 60, category: "mint", stock: 55, quantity: 50, unit: "gm", image: "./warehouse_images/colgate.jpeg" },
-            { id: 25, title: "Breath Savers Mints", price: 45, category: "mint", stock: 50, quantity: 75, unit: "gm", image: "./warehouse_images/colgate.jpeg" },
-            { id: 26, title: "Ice Breakers Mints", price: 50, category: "mint", stock: 45, quantity: 150, unit: "gm", image: "./warehouse_images/colgate.jpeg" },
-            { id: 27, title: "Mentos Mints", price: 35, category: "mint", stock: 40, quantity: 200, unit: "gm", image: "./warehouse_images/colgate.jpeg" },
-            { id: 28, title: "Lifesavers Mints", price: 55, category: "mint", stock: 60, quantity: 300, unit: "gm", image: "./warehouse_images/colgate.jpeg" },
+            { id: 9, title: "Mint Mouthwash", price: 50, category: "mint", stock: 50, quantity: 250, unit: "ml", image: "colgate.jpeg" },
+            { id: 10, title: "Freshmint Spray", price: 70, category: "mint", stock: 45, quantity: 200, unit: "ml", image: "colgate.jpeg" },
+            { id: 23, title: "Tic Tac Freshmint", price: 40, category: "mint", stock: 60, quantity: 100, unit: "gm", image: "colgate.jpeg" },
+            { id: 24, title: "Altoids Mints", price: 60, category: "mint", stock: 55, quantity: 50, unit: "gm", image: "colgate.jpeg" },
+            { id: 25, title: "Breath Savers Mints", price: 45, category: "mint", stock: 50, quantity: 75, unit: "gm", image: "colgate.jpeg" },
+            { id: 26, title: "Ice Breakers Mints", price: 50, category: "mint", stock: 45, quantity: 150, unit: "gm", image: "colgate.jpeg" },
+            { id: 27, title: "Mentos Mints", price: 35, category: "mint", stock: 40, quantity: 200, unit: "gm", image: "colgate.jpeg" },
+            { id: 28, title: "Lifesavers Mints", price: 55, category: "mint", stock: 60, quantity: 300, unit: "gm", image: "colgate.jpeg" },
 
             // Soap
-            { id: 41, title: "Lux Soap", price: 30, category: "soap", stock: 60, quantity: 125, unit: "gm", image: "./warehouse_images/lux.jpeg" },
-            { id: 42, title: "Dove Soap", price: 40, category: "soap", stock: 55, quantity: 100, unit: "gm", image: "./warehouse_images/dove.jpeg" },
-            { id: 43, title: "Pears Soap", price: 50, category: "soap", stock: 50, quantity: 150, unit: "gm", image: "./warehouse_images/pears.jpeg" },
-            { id: 44, title: "Lifebuoy Soap", price: 35, category: "soap", stock: 40, quantity: 100, unit: "gm", image: "./warehouse_images/lifeboy.jpeg" },
-            { id: 45, title: "Dettol Soap", price: 45, category: "soap", stock: 45, quantity: 120, unit: "gm", image: "./warehouse_images/dettol.jpeg" },
-            { id: 46, title: "Santoor Soap", price: 25, category: "soap", stock: 50, quantity: 90, unit: "gm", image: "./warehouse_images/santoor.jpeg" },
-            { id: 47, title: "Cinthol Soap", price: 35, category: "soap", stock: 60, quantity: 110, unit: "gm", image: "./warehouse_images/cinthol.jpeg" },
-            { id: 48, title: "Medimix Soap", price: 30, category: "soap", stock: 45, quantity: 125, unit: "gm", image: "./warehouse_images/medimix.jpeg" },
+            { id: 41, title: "Lux Soap", price: 30, category: "soap", stock: 60, quantity: 125, unit: "gm", image: "Lux Soft Touch Body Wash.jpeg" },
+            { id: 42, title: "Dove Soap", price: 40, category: "soap", stock: 55, quantity: 100, unit: "gm", image: "dove.jpeg" },
+            { id: 43, title: "Pears Soap", price: 50, category: "soap", stock: 50, quantity: 150, unit: "gm", image: "pears.jpeg" },
+            { id: 44, title: "Lifebuoy Soap", price: 35, category: "soap", stock: 40, quantity: 100, unit: "gm", image: "lifeboy.jpeg" },
+            { id: 45, title: "Dettol Soap", price: 45, category: "soap", stock: 45, quantity: 120, unit: "gm", image: "dettol.jpeg" },
+            { id: 46, title: "Santoor Soap", price: 25, category: "soap", stock: 50, quantity: 90, unit: "gm", image: "santoor.jpeg" },
+            { id: 47, title: "Cinthol Soap", price: 35, category: "soap", stock: 60, quantity: 110, unit: "gm", image: "cinthol.jpeg" },
+            { id: 48, title: "Medimix Soap", price: 30, category: "soap", stock: 45, quantity: 125, unit: "gm", image: "nivya.jpeg" },
 
             // Shampoo
-            { id: 61, title: "Pantene Shampoo", price: 120, category: "shampoo", stock: 80, quantity: 200, unit: "ml", image: "./warehouse_images/pantene.jpeg" },
-            { id: 62, title: "Head & Shoulders Shampoo", price: 130, category: "shampoo", stock: 90, quantity: 150, unit: "ml", image: "./warehouse_images/headandshoulder.jpeg" },
-            { id: 63, title: "Dove Shampoo", price: 110, category: "shampoo", stock: 70, quantity: 180, unit: "ml", image: "./warehouse_images/doves.jpeg" },
-            { id: 64, title: "Sunsilk Shampoo", price: 90, category: "shampoo", stock: 50, quantity: 250, unit: "ml", image: "./warehouse_images/sunsilk.jpeg" },
-            { id: 65, title: "Tresemme Shampoo", price: 140, category: "shampoo", stock: 60, quantity: 200, unit: "ml", image: "./warehouse_images/tresme.jpeg" },
-            { id: 66, title: "Himalaya Shampoo", price: 100, category: "shampoo", stock: 75, quantity: 220, unit: "ml", image: "./warehouse_images/himalaya.jpeg" },
-            { id: 67, title: "Clinic Plus Shampoo", price: 80, category: "shampoo", stock: 50, quantity: 250, unit: "ml", image: "./warehouse_images/clinikplus.jpeg" },
-            { id: 68, title: "Biotique Shampoo", price: 110, category: "shampoo", stock: 40, quantity: 200, unit: "ml", image: "./warehouse_images/biotique.jpeg" },
+            { id: 61, title: "Pantene Shampoo", price: 120, category: "shampoo", stock: 80, quantity: 200, unit: "ml", image: "pantene.jpeg" },
+            { id: 62, title: "Head & Shoulders Shampoo", price: 130, category: "shampoo", stock: 90, quantity: 150, unit: "ml", image: "headandshoulder.jpeg" },
+            { id: 63, title: "Dove Shampoo", price: 110, category: "shampoo", stock: 70, quantity: 180, unit: "ml", image: "doves.jpeg" },
+            { id: 64, title: "Sunsilk Shampoo", price: 90, category: "shampoo", stock: 50, quantity: 250, unit: "ml", image: "sunsilk.jpeg" },
+            { id: 65, title: "Tresemme Shampoo", price: 140, category: "shampoo", stock: 60, quantity: 200, unit: "ml", image: "tresme.jpeg" },
+            { id: 66, title: "Himalaya Shampoo", price: 100, category: "shampoo", stock: 75, quantity: 220, unit: "ml", image: "himalaya.jpeg" },
+            { id: 67, title: "Clinic Plus Shampoo", price: 80, category: "shampoo", stock: 50, quantity: 250, unit: "ml", image: "clinikplus.jpeg" },
+            { id: 68, title: "Biotique Shampoo", price: 110, category: "shampoo", stock: 40, quantity: 200, unit: "ml", image: "biotique.jpeg" },
 
-            { id: 101, title: "Vaseline Intensive Care Lotion", price: 150, category: "lotion", stock: 100, quantity: 200, unit: "ml", image: "./warehouse_images/vasline.jpeg" },
-            { id: 102, title: "Nivea Body Lotion", price: 200, category: "lotion", stock: 90, quantity: 200, unit: "ml", image: "./warehouse_images/nivya.jpeg" },
-            { id: 103, title: "Pond's Body Lotion", price: 180, category: "lotion", stock: 85, quantity: 200, unit: "ml", image: "./warehouse_images/ponds.jpeg" },
-            { id: 104, title: "Dove Nourishing Lotion", price: 220, category: "lotion", stock: 75, quantity: 200, unit: "ml", image: "./warehouse_images/dovelotion.jpeg" },
-            { id: 105, title: "Jergens Moisturizing Lotion", price: 250, category: "lotion", stock: 80, quantity: 250, unit: "ml", image: "./warehouse_images/jergens.jpeg" },
-            { id: 106, title: "Aveeno Daily Moisturizing Lotion", price: 300, category: "lotion", stock: 70, quantity: 250, unit: "ml", image: "./warehouse_images/aveeno.jpeg" },
-            { id: 107, title: "CeraVe Moisturizing Lotion", price: 320, category: "lotion", stock: 65, quantity: 250, unit: "ml", image: "./warehouse_images/cerave.jpeg" },
-            { id: 108, title: "Cetaphil Lotion", price: 280, category: "lotion", stock: 90, quantity: 250, unit: "ml", image: "./warehouse_images/cetaphil.jpeg" },
+            { id: 101, title: "Vaseline Intensive Care Lotion", price: 150, category: "lotion", stock: 100, quantity: 200, unit: "ml", image: "vasline.jpeg" },
+            { id: 102, title: "Nivea Body Lotion", price: 200, category: "lotion", stock: 90, quantity: 200, unit: "ml", image: "nivya.jpeg" },
+            { id: 103, title: "Pond's Body Lotion", price: 180, category: "lotion", stock: 85, quantity: 200, unit: "ml", image: "ponds.jpeg" },
+            { id: 104, title: "Dove Nourishing Lotion", price: 220, category: "lotion", stock: 75, quantity: 200, unit: "ml", image: "dovelotion.jpeg" },
+            { id: 105, title: "Jergens Moisturizing Lotion", price: 250, category: "lotion", stock: 80, quantity: 250, unit: "ml", image: "jergens.jpeg" },
+            { id: 106, title: "Aveeno Daily Moisturizing Lotion", price: 300, category: "lotion", stock: 70, quantity: 250, unit: "ml", image: "aveeno.jpeg" },
+            { id: 107, title: "CeraVe Moisturizing Lotion", price: 320, category: "lotion", stock: 65, quantity: 250, unit: "ml", image: "cerave.jpeg" },
+            { id: 108, title: "Cetaphil Lotion", price: 280, category: "lotion", stock: 90, quantity: 250, unit: "ml", image: "cetaphil.jpeg" },
 
-            { id: 120, title: "Rexona Women Deodorant", price: 160, category: "deodorant", stock: 90, quantity: 150, unit: "ml", image: "./warehouse_images/rexona.jpeg" },
-            { id: 121, title: "Secret Invisible Solid Deodorant", price: 230, category: "deodorant", stock: 70, quantity: 150, unit: "ml", image: "./warehouse_images/secret.jpeg" },
-            { id: 122, title: "Degree Men Deodorant", price: 190, category: "deodorant", stock: 80, quantity: 150, unit: "ml", image: "./warehouse_images/degreemen.jpeg" },
-            { id: 123, title: "Adidas Dynamic Pulse Deodorant", price: 210, category: "deodorant", stock: 75, quantity: 150, unit: "ml", image: "./warehouse_images/addidasdio.jpeg" },
-            { id: 124, title: "Nivea Fresh Natural Deodorant", price: 170, category: "deodorant", stock: 90, quantity: 150, unit: "ml", image: "./warehouse_images/nivyadeo.jpeg" },
-            { id: 125, title: "Fogg Fresh Aqua Deodorant", price: 140, category: "deodorant", stock: 100, quantity: 150, unit: "ml", image: "./warehouse_images/foggdio.jpeg" },
-            { id: 126, title: "Yardley London Deodorant", price: 250, category: "deodorant", stock: 60, quantity: 150, unit: "ml", image: "./warehouse_images/yardleydio.jpeg" },
-            { id: 127, title: "Calvin Klein Deodorant", price: 300, category: "deodorant", stock: 65, quantity: 150, unit: "ml", image: "./warehouse_images/calvindio.jpeg" },
-            { id: 128, title: "Brut Deodorant", price: 180, category: "deodorant", stock: 80, quantity: 150, unit: "ml", image: "./warehouse_images/brutdio.jpeg" },
+            { id: 120, title: "Rexona Women Deodorant", price: 160, category: "deodorant", stock: 90, quantity: 150, unit: "ml", image: "rexona.jpeg" },
+            { id: 121, title: "Secret Invisible Solid Deodorant", price: 230, category: "deodorant", stock: 70, quantity: 150, unit: "ml", image: "secret.jpeg" },
+            { id: 122, title: "Degree Men Deodorant", price: 190, category: "deodorant", stock: 80, quantity: 150, unit: "ml", image: "degreemen.jpeg" },
+            { id: 123, title: "Adidas Dynamic Pulse Deodorant", price: 210, category: "deodorant", stock: 75, quantity: 150, unit: "ml", image: "addidasdio.jpeg" },
+            { id: 124, title: "Nivea Fresh Natural Deodorant", price: 170, category: "deodorant", stock: 90, quantity: 150, unit: "ml", image: "nivyadeo.jpeg" },
+            { id: 125, title: "Fogg Fresh Aqua Deodorant", price: 140, category: "deodorant", stock: 100, quantity: 150, unit: "ml", image: "foggdio.jpeg" },
+            { id: 126, title: "Yardley London Deodorant", price: 250, category: "deodorant", stock: 60, quantity: 150, unit: "ml", image: "yardleydio.jpeg" },
+            { id: 127, title: "Calvin Klein Deodorant", price: 300, category: "deodorant", stock: 65, quantity: 150, unit: "ml", image: "calvindio.jpeg" },
+            { id: 128, title: "Brut Deodorant", price: 180, category: "deodorant", stock: 80, quantity: 150, unit: "ml", image: "brutdio.jpeg" },
 
-            { id: 141, title: "Vicco Vajradanti Toothbrush", price: 65, category: "toothbrush", stock: 80, quantity: 1, unit: "pc", image: "./warehouse_images/viccotb.jpeg" },
-            { id: 142, title: "Pepsodent Triple Clean Toothbrush", price: 35, category: "toothbrush", stock: 120, quantity: 1, unit: "pc", image: "./warehouse_images/pepsodenttb.jpeg" },
-            { id: 143, title: "Philips Sonicare Electric Toothbrush", price: 3000, category: "toothbrush", stock: 30, quantity: 1, unit: "pc", image: "./warehouse_images/phillipstb.jpeg" },
-            { id: 144, title: "Fairywill Electric Toothbrush", price: 2500, category: "toothbrush", stock: 25, quantity: 1, unit: "pc", image: "./warehouse_images/fairwill.jpeg" },
-            { id: 145, title: "Oral-B Electric Toothbrush", price: 3500, category: "toothbrush", stock: 20, quantity: 1, unit: "pc", image: "./warehouse_images/oralb.jpeg" },
-            { id: 146, title: "Himalaya Neem Face Wash", price: 120, category: "facewash", stock: 100, quantity: 100, unit: "gm", image: "./warehouse_images/himalayatb.jpeg" },
-            { id: 147, title: "Pond's Pure White Face Wash", price: 150, category: "facewash", stock: 90, quantity: 100, unit: "gm", image: "./warehouse_images/pondsfacehwash.jpeg" },
-            { id: 148, title: "Garnier Men Oil Clear Face Wash", price: 170, category: "facewash", stock: 80, quantity: 100, unit: "gm", image: "./warehouse_images/garneir.jpeg" },
+            { id: 141, title: "Vicco Vajradanti Toothbrush", price: 65, category: "toothbrush", stock: 80, quantity: 1, unit: "pc", image: "viccotb.jpeg" },
+            { id: 142, title: "Pepsodent Triple Clean Toothbrush", price: 35, category: "toothbrush", stock: 120, quantity: 1, unit: "pc", image: "pepsodenttb.jpeg" },
+            { id: 143, title: "Philips Sonicare Electric Toothbrush", price: 3000, category: "toothbrush", stock: 30, quantity: 1, unit: "pc", image: "phillipstb.jpeg" },
+            { id: 144, title: "Fairywill Electric Toothbrush", price: 2500, category: "toothbrush", stock: 25, quantity: 1, unit: "pc", image: "fairwill.jpeg" },
+            { id: 145, title: "Oral-B Electric Toothbrush", price: 3500, category: "toothbrush", stock: 20, quantity: 1, unit: "pc", image: "oralb.jpeg" },
+            { id: 146, title: "Himalaya Neem Face Wash", price: 120, category: "facewash", stock: 100, quantity: 100, unit: "gm", image: "himalayatb.jpeg" },
+            { id: 147, title: "Pond's Pure White Face Wash", price: 150, category: "facewash", stock: 90, quantity: 100, unit: "gm", image: "pondsfacewash.jpeg" },
+            { id: 148, title: "Garnier Men Oil Clear Face Wash", price: 170, category: "facewash", stock: 80, quantity: 100, unit: "gm", image: "garneir.jpeg" },
 
 
             // Hand Wash
-            { id: 161, title: "Dettol Hand Wash", price: 80, category: "handwash", stock: 100, quantity: 250, unit: "ml" },
-            { id: 162, title: "Lifebuoy Total Hand Wash", price: 75, category: "handwash", stock: 120, quantity: 250, unit: "ml" },
+            { id: 161, title: "Dettol Hand Wash", price: 80, category: "handwash", stock: 100, quantity: 250, unit: "ml", image: "dettolhandwash.jpeg" },
+            { id: 162, title: "Lifebuoy Total Hand Wash", price: 75, category: "handwash", stock: 120, quantity: 250, unit: "ml", image: "lifeboyhandwash.jpeg" },
             { id: 163, title: "Himalaya Herbal Hand Wash", price: 90, category: "handwash", stock: 85, quantity: 250, unit: "ml" },
             { id: 164, title: "Patanjali Herbal Hand Wash", price: 65, category: "handwash", stock: 110, quantity: 250, unit: "ml" },
             { id: 165, title: "Palmolive Naturals Hand Wash", price: 100, category: "handwash", stock: 90, quantity: 250, unit: "ml" },
@@ -518,26 +518,26 @@
             // Additional products...
         ];
 
+        window.products = products; // Store globally
         // Filters based on category and name
-            document.getElementById('category-filter').addEventListener('change', () => {
-                applyFilters();
-                updateNameFilter(); // Update the dropdown based on category
+        document.getElementById('category-filter').addEventListener('change', () => {
+            applyFilters();
+            updateNameFilter(); // Update the dropdown based on category
+        });
+        document.getElementById('name-filter').addEventListener('change', applyFilters);
+
+        function applyFilters() {
+            const category = document.getElementById('category-filter').value;
+            const name = document.getElementById('name-filter').value.toLowerCase();
+
+            const filteredProducts = products.filter(product => {
+                const matchesCategory = !category || product.category === category;
+                const matchesName = !name || product.title.toLowerCase().includes(name);
+                return matchesCategory && matchesName;
             });
-            document.getElementById('name-filter').addEventListener('change', applyFilters);
 
-            function applyFilters() {
-                const category = document.getElementById('category-filter').value;
-                const name = document.getElementById('name-filter').value.toLowerCase();
-
-                const filteredProducts = window.products.filter(product => {
-                    const matchesCategory = !category || product.category === category;
-                    const matchesName = !name || product.title.toLowerCase().includes(name);
-                    return matchesCategory && matchesName;
-                });
-
-                loadProducts(filteredProducts);
-            }
-
+            loadProducts(filteredProducts);
+        }
         function loadProducts(productsToShow) {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
@@ -545,42 +545,42 @@
                 const productItem = document.createElement('div');
                 productItem.classList.add('product-item');
                 productItem.innerHTML = `
-            <img src="${product.image}" alt="${product.title}" style="width: 100px; height: 100px; margin-bottom: 10px;">
-            <h3>${product.title}</h3>
-            <p>Price: ₹${product.price}</p>
-            <p><strong>Stock Available:</strong> ${product.stock}</p>
-            <p><strong>Quantity:</strong> ${product.quantity} ${product.unit}</p>
-            <div class="quantity-controls">
-                <button onclick="updateQuantity(${product.id}, -1)">-</button>
-                <input type="number" id="quantity-${product.id}" value="1" min="1" max="${product.stock}">
-                <button onclick="updateQuantity(${product.id}, 1)">+</button>
-            </div>
-            <button onclick="addToCart(${product.id})">Add to Cart</button>
-        `;
+                <img src="/products/warehouse_images/${product.image}" alt="${product.title}" style="width: 100px; height: 100px; margin-bottom: 10px;">
+                <h3>${product.title}</h3>
+                <p>Price: ₹${product.price}</p>
+                <p><strong>Stock Available:</strong> ${product.stock ?? 'N/A'}</p>
+                <p><strong>Quantity:</strong> ${product.quantity} ${product.unit}</p>
+                <div class="quantity-controls">
+                    <button onclick="updateQuantity(${product.id}, -1)">-</button>
+                    <input type="number" id="quantity-${product.id}" value="1" min="1" max="${product.stock ?? 99}">
+                    <button onclick="updateQuantity(${product.id}, 1)">+</button>
+                </div>
+                <button onclick="addToCart(${product.id})">Add to Cart</button>
+            `;
                 productList.appendChild(productItem);
             });
         }
 
         // Function to fetch products from the server
-            async function fetchProducts() {
-                try {
-                    const response = await fetch('/products');
-                    const products = await response.json();
-                    return products;
-                } catch (error) {
-                    console.error('Error fetching products:', error);
-                }
-            }
+        // async function fetchProducts() {
+        //     try {
+        //         const response = await fetch('/products');
+        //         const products = await response.json();
+        //         return products;
+        //     } catch (error) {
+        //         console.error('Error fetching products:', error);
+        //     }
+        // }
 
-            // Fetch products and load them into the page
-            fetchProducts().then((products) => {
-                window.products = products; // Store products globally
-                loadProducts(products);
-            });
+        // Fetch products and load them into the page
+        // fetchProducts().then((products) => {
+        //     window.products = products; // Store products globally
+        // });
+
+        loadProducts(products);
 
 
-
-        function updateQuantity(productId , delta) {
+        function updateQuantity(productId, delta) {
             const product = products.find(p => p.id === productId);
             const quantityInput = document.getElementById(`quantity-${productId}`);
             let currentQuantity = parseInt(quantityInput.value);
@@ -592,7 +592,7 @@
             quantityInput.value = currentQuantity;
         }
 
-       function addToCart(productId) {
+        function addToCart(productId) {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const product = window.products.find(p => p.id === productId);
             const quantityInput = document.getElementById(`quantity-${productId}`);
@@ -628,26 +628,26 @@
             window.dispatchEvent(new Event('cartUpdated'));
         }
 
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const product = products.find(p => p.id === productId);
-            const quantityInput = document.getElementById(`quantity-${productId}`);
-            const quantity = parseInt(quantityInput.value);
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const product = products.find(p => p.id === productId);
+        const quantityInput = document.getElementById(`quantity-${productId}`);
+        const quantity = parseInt(quantityInput.value);
 
-            const existingProduct = cart.find(p => p.id === productId);
+        const existingProduct = cart.find(p => p.id === productId);
 
-            if (existingProduct) {
-                existingProduct.quantity += quantity;
-            } else {
-                cart.push({ ...product, quantity });
-            }
+        if (existingProduct) {
+            existingProduct.quantity += quantity;
+        } else {
+            cart.push({ ...product, quantity });
+        }
 
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            showConfirmationMessage(product.title);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        showConfirmationMessage(product.title);
 
-            // Dispatch a custom event to notify other pages about the cart update
-            window.dispatchEvent(new Event('cartUpdated'));
-        
+        // Dispatch a custom event to notify other pages about the cart update
+        window.dispatchEvent(new Event('cartUpdated'));
+
 
 
         function updateCartCount() {

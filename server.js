@@ -3,6 +3,8 @@ const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const path = require('path');
 const util = require('util');
+require('dotenv').config();
+
 
 
 const app = express();
@@ -11,13 +13,15 @@ app.use(express.json());
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
+
 
 // Database connection
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Pass@123',
-    database: 'warehouse_management'
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE
 });
 
 db.connect(err => {
@@ -888,8 +892,7 @@ app.post('/order', (req, res) => {
 });
 
 // Serve static files from the warehouse_images directory
-app.use('/warehouse_images', express.static(path.join(__dirname, 'warehouse_images')));
-
+app.use('/products/warehouse_images/', express.static(path.join(__dirname, 'warehouse_images')));
 
 // Default route for undefined routes
 app.use((req, res) => {
